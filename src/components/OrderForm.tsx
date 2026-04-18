@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { trackEvent } from "@/components/FacebookPixel";
 
 interface OrderFormProps {
@@ -8,20 +8,127 @@ interface OrderFormProps {
   productPrice: number;
 }
 
+interface City {
+  ref: string;
+  name: string;
+}
+
+interface Warehouse {
+  ref: string;
+  name: string;
+  number: string;
+}
+
 export default function OrderForm({ productName, productPrice }: OrderFormProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [city, setCity] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
+  // NP city search
+  const [cityQuery, setCityQuery] = useState("");
+  const [cities, setCities] = useState<City[]>([]);
+  const [selectedCity, setSelectedCity] = useState<City | null>(null);
+  const [showCities, setShowCities] = useState(false);
+  const cityTimeout = useRef<any>(null);
+
+  // NP warehouse search
+  const [warehouseQuery, setWarehouseQuery] = useState("");
+  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  const [selectedWarehouse, setSelectedWarehouse] = useState<Warehouse | null>(null);
+  const [showWarehouses, setShowWarehouses] = useState(false);
+  const warehouseTimeout = useRef<any>(null);
+
   const total = productPrice * quantity;
+
+  // Search cities
+  useEffect(() => {
+    if (cityQuery.length < 2 || selectedCity) return;
+    clearTimeout(cityTimeout.current);
+    cityTimeout.current = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/novaposhta", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "searchCity", query: cityQuery }),
+        });
+        const data = await res.json();
+        setCities(data.cities || []);
+        setShowCities(true);
+      } catch {
+        setCities([]);
+      }
+    }, 300);
+  }, [cityQuery, selectedCity]);
+
+  // Search warehouses
+  useEffect(() => {
+    if (!selectedCity) return;
+    clearTimeout(warehouseTimeout.current);
+    warehouseTimeout.current = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/novaposhta", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "getWarehouses",
+            cityRef: selectedCity.ref,
+            query: warehouseQuery,
+          }),
+        });
+        const data = await res.json();
+        setWarehouses(data.warehouses || []);
+        if (warehouseQuery.length > 0) setShowWarehouses(true);
+      } catch {
+        setWarehouses([]);
+      }
+    }, 300);
+  }, [selectedCity, warehouseQuery]);
+
+  // Load warehouses when city selected
+  useEffect(() => {
+    if (!selectedCity) return;
+    (async () => {
+      try {
+        const res = await fetch("/api/novaposhta", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "getWarehouses",
+            cityRef: selectedCity.ref,
+            query: "",
+          }),
+        });
+        const data = await res.json();
+        setWarehouses(data.warehouses || []);
+      } catch {
+        setWarehouses([]);
+      }
+    })();
+  }, [selectedCity]);
+
+  function selectCity(city: City) {
+    setSelectedCity(city);
+    setCityQuery(city.name);
+    setShowCities(false);
+    setSelectedWarehouse(null);
+    setWarehouseQuery("");
+  }
+
+  function selectWarehouse(wh: Warehouse) {
+    setSelectedWarehouse(wh);
+    setWarehouseQuery(wh.name);
+    setShowWarehouses(false);
+  }
 
   async function handleSubmit() {
     if (!name.trim() || !phone.trim()) {
       alert("Будь ласка, заповніть ім'я та телефон");
       return;
     }
+
+    const cityText = selectedCity ? selectedCity.name : cityQuery;
+    const warehouseText = selectedWarehouse ? selectedWarehouse.name : warehouseQuery;
 
     setStatus("sending");
 
@@ -32,7 +139,7 @@ export default function OrderForm({ productName, productPrice }: OrderFormProps)
         body: JSON.stringify({
           name: name.trim(),
           phone: phone.trim(),
-          city: city.trim(),
+          city: cityText + (warehouseText ? ", " + warehouseText : ""),
           product: productName,
           price: productPrice,
           quantity,
@@ -56,30 +163,16 @@ export default function OrderForm({ productName, productPrice }: OrderFormProps)
 
   if (status === "success") {
     return (
-      <div
-        style={{
-          padding: "40px 32px",
-          background: "var(--paper)",
-          border: "1px solid var(--line-soft)",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "48px", marginBottom: "16px" }}>✓</div>
-        <h3
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: "28px",
-            fontWeight: 400,
-            marginBottom: "12px",
-          }}
-        >
+      <div style={{ padding: "40px 32px", background: "var(--paper)", border: "1px solid var(--line-soft)", textAlign: "center" }}>
+        <div style={{ fontSize: "48px", marginBottom: "16px" }}>&#10003;</div>
+        <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "28px", fontWeight: 400, marginBottom: "12px" }}>
           Дякуємо за замовлення!
         </h3>
         <p style={{ color: "var(--text)", fontSize: "14px", lineHeight: "1.7", marginBottom: "8px" }}>
           Ми зв&apos;яжемося з вами протягом 15–30 хвилин для підтвердження.
         </p>
         <p style={{ color: "var(--text-dim)", fontSize: "13px" }}>
-          {productName} · {quantity} шт. · {total.toLocaleString("uk-UA")} ₴
+          {productName} &middot; {quantity} шт. &middot; {total.toLocaleString("uk-UA")} &#8372;
         </p>
       </div>
     );
@@ -106,113 +199,138 @@ export default function OrderForm({ productName, productPrice }: OrderFormProps)
     fontWeight: 500,
   };
 
+  const dropdownStyle: React.CSSProperties = {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    right: 0,
+    background: "var(--bg-card)",
+    border: "1px solid var(--line)",
+    borderTop: "none",
+    maxHeight: "200px",
+    overflowY: "auto",
+    zIndex: 50,
+    boxShadow: "0 8px 24px -8px rgba(26,22,18,.15)",
+  };
+
+  const dropdownItemStyle: React.CSSProperties = {
+    padding: "12px 18px",
+    fontSize: "14px",
+    color: "var(--ink)",
+    cursor: "pointer",
+    borderBottom: "1px solid var(--line-soft)",
+    transition: "background .15s",
+  };
+
   return (
     <div>
       {/* Quantity + Total */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: "24px",
-          padding: "16px 20px",
-          background: "var(--paper)",
-          border: "1px solid var(--line-soft)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "0" }}>
-          <button
-            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-            style={{
-              width: "40px",
-              height: "40px",
-              background: "transparent",
-              border: "1px solid var(--line)",
-              color: "var(--ink)",
-              fontSize: "18px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            −
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px", padding: "16px 20px", background: "var(--paper)", border: "1px solid var(--line-soft)" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} style={{ width: "40px", height: "40px", background: "transparent", border: "1px solid var(--line)", color: "var(--ink)", fontSize: "18px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            &#8722;
           </button>
-          <div
-            style={{
-              width: "48px",
-              height: "40px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderTop: "1px solid var(--line)",
-              borderBottom: "1px solid var(--line)",
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "18px",
-            }}
-          >
+          <div style={{ width: "48px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", fontFamily: "'Cormorant Garamond', serif", fontSize: "18px" }}>
             {quantity}
           </div>
-          <button
-            onClick={() => setQuantity((q) => q + 1)}
-            style={{
-              width: "40px",
-              height: "40px",
-              background: "transparent",
-              border: "1px solid var(--line)",
-              color: "var(--ink)",
-              fontSize: "18px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <button onClick={() => setQuantity((q) => q + 1)} style={{ width: "40px", height: "40px", background: "transparent", border: "1px solid var(--line)", color: "var(--ink)", fontSize: "18px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
             +
           </button>
         </div>
-        <div
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: "24px",
-            fontWeight: 500,
-            color: "var(--ink)",
-          }}
-        >
-          {total.toLocaleString("uk-UA")} ₴
+        <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "24px", fontWeight: 500, color: "var(--ink)" }}>
+          {total.toLocaleString("uk-UA")} &#8372;
         </div>
       </div>
 
-      {/* Form fields */}
+      {/* Name */}
       <div style={{ marginBottom: "16px" }}>
         <label style={labelStyle}>Ваше ім&apos;я *</label>
-        <input
-          type="text"
-          placeholder="Введіть ім'я"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={inputStyle}
-        />
+        <input type="text" placeholder="Введіть ім'я" value={name} onChange={(e) => setName(e.target.value)} style={inputStyle} />
       </div>
+
+      {/* Phone */}
       <div style={{ marginBottom: "16px" }}>
         <label style={labelStyle}>Телефон *</label>
-        <input
-          type="tel"
-          placeholder="+380 ___ ___ __ __"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          style={inputStyle}
-        />
+        <input type="tel" placeholder="+380 ___ ___ __ __" value={phone} onChange={(e) => setPhone(e.target.value)} style={inputStyle} />
       </div>
-      <div style={{ marginBottom: "24px" }}>
-        <label style={labelStyle}>Місто та відділення Нової Пошти</label>
+
+      {/* City with autocomplete */}
+      <div style={{ marginBottom: "16px", position: "relative" }}>
+        <label style={labelStyle}>Місто *</label>
         <input
           type="text"
-          placeholder="Місто, № відділення"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
+          placeholder="Почніть вводити назву міста..."
+          value={cityQuery}
+          onChange={(e) => {
+            setCityQuery(e.target.value);
+            setSelectedCity(null);
+            setSelectedWarehouse(null);
+            setWarehouseQuery("");
+          }}
+          onFocus={() => { if (cities.length > 0 && !selectedCity) setShowCities(true); }}
+          onBlur={() => setTimeout(() => setShowCities(false), 200)}
           style={inputStyle}
         />
+        {showCities && cities.length > 0 && (
+          <div style={dropdownStyle}>
+            {cities.map((city) => (
+              <div
+                key={city.ref}
+                onClick={() => selectCity(city)}
+                onMouseEnter={(e) => { (e.target as HTMLElement).style.background = "var(--bg-soft)"; }}
+                onMouseLeave={(e) => { (e.target as HTMLElement).style.background = "var(--bg-card)"; }}
+                style={dropdownItemStyle}
+              >
+                {city.name}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Warehouse with autocomplete */}
+      <div style={{ marginBottom: "24px", position: "relative" }}>
+        <label style={labelStyle}>Відділення Нової Пошти *</label>
+        <input
+          type="text"
+          placeholder={selectedCity ? "Введіть номер або назву відділення..." : "Спочатку оберіть місто"}
+          value={warehouseQuery}
+          onChange={(e) => {
+            setWarehouseQuery(e.target.value);
+            setSelectedWarehouse(null);
+          }}
+          onFocus={() => { if (warehouses.length > 0 && !selectedWarehouse) setShowWarehouses(true); }}
+          onBlur={() => setTimeout(() => setShowWarehouses(false), 200)}
+          disabled={!selectedCity}
+          style={{
+            ...inputStyle,
+            opacity: selectedCity ? 1 : 0.5,
+            cursor: selectedCity ? "text" : "not-allowed",
+          }}
+        />
+        {showWarehouses && warehouses.length > 0 && (
+          <div style={dropdownStyle}>
+            {warehouses
+              .filter((wh) =>
+                warehouseQuery
+                  ? wh.name.toLowerCase().includes(warehouseQuery.toLowerCase()) ||
+                    wh.number.includes(warehouseQuery)
+                  : true
+              )
+              .slice(0, 15)
+              .map((wh) => (
+                <div
+                  key={wh.ref}
+                  onClick={() => selectWarehouse(wh)}
+                  onMouseEnter={(e) => { (e.target as HTMLElement).style.background = "var(--bg-soft)"; }}
+                  onMouseLeave={(e) => { (e.target as HTMLElement).style.background = "var(--bg-card)"; }}
+                  style={dropdownItemStyle}
+                >
+                  {wh.name}
+                </div>
+              ))}
+          </div>
+        )}
       </div>
 
       {/* Submit */}
@@ -253,16 +371,7 @@ export default function OrderForm({ productName, productPrice }: OrderFormProps)
       )}
 
       {/* Trust */}
-      <div
-        style={{
-          display: "flex",
-          gap: "24px",
-          padding: "24px",
-          background: "var(--bg-soft)",
-          border: "1px solid var(--line-soft)",
-          flexWrap: "wrap",
-        }}
-      >
+      <div style={{ display: "flex", gap: "24px", padding: "24px", background: "var(--bg-soft)", border: "1px solid var(--line-soft)", flexWrap: "wrap" }}>
         <TrustItem text="Гарантія 12 міс." />
         <TrustItem text="Оплата при отриманні" />
         <TrustItem text="Відправка сьогодні" />
