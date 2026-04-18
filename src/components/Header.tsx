@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <>
@@ -59,8 +61,8 @@ export default function Header() {
             height: "64px",
           }}
         >
-          {/* Left: burger (mobile) + nav (desktop) */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {/* Left: burger (mobile) + logo */}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             {/* Burger - mobile only */}
             <button
               className="mobile-only"
@@ -80,39 +82,44 @@ export default function Header() {
               <span style={{ width: "20px", height: "1.5px", background: "var(--ink)", transition: "all .3s", transform: menuOpen ? "rotate(-45deg) translateY(-5.5px)" : "none" }} />
             </button>
 
-            {/* Desktop nav */}
-            <div className="desktop-only" style={{ display: "flex", gap: "8px" }}>
-              <NavLink href="/catalog">Каталог</NavLink>
-              <NavLink href="/about">Бренд</NavLink>
-            </div>
+            {/* Logo — left aligned */}
+            <Link
+              href="/"
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "28px",
+                fontWeight: 500,
+                letterSpacing: ".35em",
+                color: "var(--ink)",
+                lineHeight: 1,
+                display: "flex",
+                alignItems: "baseline",
+              }}
+            >
+              <span>TAL</span>
+              <span
+                style={{
+                  color: "var(--gold-deep)",
+                  fontWeight: 400,
+                  fontStyle: "italic",
+                  letterSpacing: "0",
+                  margin: "0 1px",
+                }}
+              >
+                I
+              </span>
+              <span>RA</span>
+            </Link>
           </div>
 
-          {/* Logo */}
-          <Link
-            href="/"
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "28px",
-              fontWeight: 500,
-              letterSpacing: ".42em",
-              color: "var(--ink)",
-              lineHeight: 1,
-              position: "absolute",
-              left: "50%",
-              transform: "translateX(-50%)",
-            }}
-          >
-            TAL
-            <em style={{ color: "var(--gold-deep)", fontWeight: 400, letterSpacing: 0, fontStyle: "italic" }}>I</em>
-            RA
-          </Link>
-
-          {/* Right */}
+          {/* Right: nav + search */}
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <div className="desktop-only" style={{ display: "flex", gap: "8px" }}>
-              <NavLink href="/delivery">Доставка</NavLink>
-              <NavLink href="/contacts">Контакти</NavLink>
-            </div>
+            <nav className="desktop-only" style={{ display: "flex", gap: "0" }}>
+              <NavLink href="/catalog" active={pathname === "/catalog"}>Каталог</NavLink>
+              <NavLink href="/about" active={pathname === "/about"}>Бренд</NavLink>
+              <NavLink href="/delivery" active={pathname === "/delivery"}>Доставка</NavLink>
+              <NavLink href="/contacts" active={pathname === "/contacts"}>Контакти</NavLink>
+            </nav>
             <button
               style={{
                 background: "transparent",
@@ -172,18 +179,21 @@ export default function Header() {
   );
 }
 
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+function NavLink({ href, children, active }: { href: string; children: React.ReactNode; active: boolean }) {
   return (
     <Link
       href={href}
       style={{
-        color: "var(--ink-soft)",
+        color: active ? "var(--gold-deep)" : "var(--ink-soft)",
         fontSize: "11px",
         letterSpacing: ".22em",
         textTransform: "uppercase",
-        fontWeight: 500,
-        padding: "8px 14px",
+        fontWeight: active ? 600 : 500,
+        padding: "8px 16px",
         transition: "color .25s",
+        position: "relative",
+        borderBottom: active ? "2px solid var(--gold-deep)" : "2px solid transparent",
+        paddingBottom: "6px",
       }}
     >
       {children}
@@ -209,7 +219,7 @@ function MobileNavLink({ href, children, onClick }: { href: string; children: Re
       }}
     >
       {children}
-      <span style={{ color: "var(--gold-deep)", fontSize: "18px" }}>→</span>
+      <span style={{ color: "var(--gold-deep)", fontSize: "18px" }}>&#8594;</span>
     </Link>
   );
 }

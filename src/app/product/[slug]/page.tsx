@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ProductPageClient from "./ProductPageClient";
 import OrderForm from "@/components/OrderForm";
+import SaleTimer from "@/components/SaleTimer";
 
 async function getProduct(slug: string) {
   return client.fetch(
@@ -267,6 +268,11 @@ export default async function ProductPage({
               >
                 {product.shortDescription}
               </p>
+            )}
+
+            {/* Sale timer — only if discount exists */}
+            {product.oldPrice && product.oldPrice > product.price && (
+              <SaleTimer />
             )}
 
             {/* Benefits */}
