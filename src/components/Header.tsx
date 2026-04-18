@@ -25,18 +25,19 @@ export default function Header() {
           letter-spacing: .22em;
           text-transform: uppercase;
           font-weight: 500;
-          padding: 8px 16px 6px;
-          transition: color .25s;
+          padding: 8px 16px;
+          transition: all .25s;
           text-decoration: none;
           border-bottom: 2px solid transparent;
         }
         .nav-link:hover {
-          color: var(--gold-deep);
+          color: #fff;
+          background: var(--gold-deep);
         }
         .nav-link.active {
-          color: var(--gold-deep);
+          color: #fff;
+          background: var(--gold-deep);
           font-weight: 600;
-          border-bottom: 2px solid var(--gold-deep);
         }
       `}</style>
 
