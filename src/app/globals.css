@@ -311,3 +311,56 @@ img { max-width: 100%; height: auto; }
   background: var(--gold-deep);
   font-weight: 600;
 }
+
+/* Rich text from Sanity */
+.rich-text p {
+  margin-bottom: 18px;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--text);
+}
+
+.rich-text strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.rich-text em {
+  color: var(--gold-deep);
+  font-style: italic;
+}
+
+.rich-text h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 400;
+  margin: 32px 0 16px;
+  color: var(--ink);
+}
+
+.rich-text h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 400;
+  margin: 24px 0 12px;
+  color: var(--ink);
+}
+
+.rich-text ul, .rich-text ol {
+  padding-left: 24px;
+  margin-bottom: 18px;
+}
+
+.rich-text li {
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+/* Trust cards responsive */
+@media (max-width: 640px) {
+  .trust-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
