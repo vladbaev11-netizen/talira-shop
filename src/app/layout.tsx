@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import FacebookPixel from "@/components/FacebookPixel";
+import { CartProvider } from "@/components/CartContext";
+import FloatingCart from "@/components/FloatingCart";
 
 export const metadata: Metadata = {
   title: "TALIRA — Преміум-товари для дому, краси та здоров'я",
@@ -15,7 +17,10 @@ export default function RootLayout({
   return (
     <html lang="uk">
       <body>
-        {children}
+        <CartProvider>
+          {children}
+          <FloatingCart />
+        </CartProvider>
         <FacebookPixel />
       </body>
     </html>

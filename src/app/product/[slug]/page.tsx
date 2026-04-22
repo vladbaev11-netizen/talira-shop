@@ -5,7 +5,8 @@ import ProductCard from "@/components/ProductCard";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ProductPageClient from "./ProductPageClient";
-import OrderButton from "@/components/OrderButton";
+import AddToCartButton from "@/components/AddToCartButton";
+import { urlFor } from "@/sanity/image";
 import SaleTimer from "@/components/SaleTimer";
 import Link from "next/link";
 import { PortableText } from "next-sanity";
@@ -174,8 +175,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <TrustCard icon="🔄" title="Повернення" sub="14 днів гарантія" />
             </div>
 
-            {/* Order button */}
-            <OrderButton productName={product.name} productPrice={product.price} />
+            {/* Add to cart */}
+            <AddToCartButton
+              slug={product.slug.current}
+              name={product.name}
+              price={product.price}
+              oldPrice={product.oldPrice}
+              image={allImages[0] ? urlFor(allImages[0]).width(200).height(200).url() : undefined}
+              style="full"
+              showQuantity={true}
+            />
           </div>
         </div>
       </section>
@@ -316,7 +325,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <p style={{ color: "var(--text)", fontSize: "14px", marginBottom: "24px" }}>
             Доставка Новою Поштою · Оплата при отриманні · Гарантія 14 днів
           </p>
-          <OrderButton productName={product.name} productPrice={product.price} style="gold" />
+          <AddToCartButton
+            slug={product.slug.current}
+            name={product.name}
+            price={product.price}
+            oldPrice={product.oldPrice}
+            image={allImages[0] ? urlFor(allImages[0]).width(200).height(200).url() : undefined}
+            style="gold"
+            showQuantity={false}
+          />
         </div>
       </section>
 
