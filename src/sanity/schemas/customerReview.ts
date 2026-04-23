@@ -80,11 +80,11 @@ export const customerReview = defineType({
       approved: "approved",
       product: "product.name",
     },
-    prepare({ title, rating, approved, product }: { title: string; rating: number; approved: boolean; product: string }) {
-      const stars = "★".repeat(rating || 0) + "☆".repeat(5 - (rating || 0));
+    prepare(selection: Record<string, any>) {
+      const { title, rating, approved, product } = selection;
       return {
-        title: (approved ? "✅ " : "⏳ ") + title,
-        subtitle: stars + (product ? " · " + product : ""),
+        title: (approved ? "✅ " : "⏳ ") + (title || ""),
+        subtitle: (product ? product + " · " : "") + (rating || 0) + "/5",
       };
     },
   },
