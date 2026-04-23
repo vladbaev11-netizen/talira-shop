@@ -9,6 +9,7 @@ const navItems = [
   { href: "/catalog", label: "Каталог" },
   { href: "/about", label: "Бренд" },
   { href: "/delivery", label: "Доставка" },
+  { href: "/reviews", label: "Відгуки" },
   { href: "/contacts", label: "Контакти" },
 ];
 

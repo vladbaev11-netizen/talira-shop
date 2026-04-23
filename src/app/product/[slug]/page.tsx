@@ -16,13 +16,22 @@ async function getProduct(slug: string) {
     `*[_type == "product" && slug.current == $slug][0] {
       name, sku, slug, price, oldPrice, badge, inStock, mainImage, gallery,
       videoUrl, shortDescription, benefits, description, specs,
-      "reviews": reviews[approved == true],
+      "reviews": reviews[!defined(approved) || approved],
       seoTitle, seoDescription,
       "category": category->{ name, slug },
       "relatedProducts": relatedProducts[]->{ 
         name, slug, price, oldPrice, badge, mainImage,
         "category": category->{ name }
       }
+    }`,
+    { slug }
+  );
+}
+
+async function getCustomerReviews(slug: string) {
+  return client.fetch(
+    `*[_type == "customerReview" && approved == true && product->slug.current == $slug] | order(createdAt desc) {
+      _id, name, rating, tags, text, reply, createdAt
     }`,
     { slug }
   );
@@ -55,7 +64,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (!product) notFound();
 
   const related = product.relatedProducts?.length > 0 ? product.relatedProducts : await getAllProducts();
+  const customerReviews = await getCustomerReviews(slug);
   const allImages = [product.mainImage, ...(product.gallery || [])].filter((img) => img && img.asset);
+  const allReviews = [...(product.reviews || []), ...customerReviews];
   const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : null;
   const soldCount = 847 + Math.floor(product.price % 500);
 
@@ -116,7 +127,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", marginLeft: "4px" }}>4.9</span>
               </div>
               <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>
-                {product.reviews?.length || 0} відгуків
+                allReviews?.length || 0} відгуків
               </span>
               <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>
                 {soldCount}+ продано
@@ -253,7 +264,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       {/* ============================================ */}
       {/* SECTION 5: Reviews */}
       {/* ============================================ */}
-      {product.reviews && product.reviews.length > 0 && (
+      {allReviews && allReviews.length > 0 && (
         <section style={{ padding: "80px 0", background: "var(--bg)" }}>
           <div className="container-pad" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
             <div style={{ textAlign: "center", marginBottom: "48px" }}>
@@ -267,11 +278,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   </svg>
                 ))}
                 <span style={{ fontSize: "18px", fontWeight: 700, color: "var(--ink)", marginLeft: "8px" }}>4.9</span>
-                <span style={{ fontSize: "14px", color: "var(--text-dim)", marginLeft: "4px" }}>({product.reviews.length} відгуків)</span>
+                <span style={{ fontSize: "14px", color: "var(--text-dim)", marginLeft: "4px" }}>({allReviews.length} відгуків)</span>
               </div>
             </div>
             <div className="grid-reviews">
-              {product.reviews.map((review: { name: string; city?: string; rating?: number; text: string }, i: number) => (
+              {allReviews.map((review: { name: string; city?: string; rating?: number; text: string }, i: number) => (
                 <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "8px", padding: "32px", position: "relative" }}>
                   {/* Quote mark */}
                   <div style={{ position: "absolute", top: "16px", right: "20px", fontFamily: "'Cormorant Garamond', serif", fontSize: "60px", lineHeight: "1", color: "var(--line-soft)" }}>&ldquo;</div>
