@@ -14,8 +14,9 @@ import { PortableText } from "next-sanity";
 async function getProduct(slug: string) {
   return client.fetch(
     `*[_type == "product" && slug.current == $slug][0] {
-      name, slug, price, oldPrice, badge, inStock, mainImage, gallery,
-      videoUrl, shortDescription, benefits, description, specs, reviews,
+      name, sku, slug, price, oldPrice, badge, inStock, mainImage, gallery,
+      videoUrl, shortDescription, benefits, description, specs,
+      "reviews": reviews[approved == true],
       seoTitle, seoDescription,
       "category": category->{ name, slug },
       "relatedProducts": relatedProducts[]->{ 
@@ -94,9 +95,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             )}
 
             {/* Product name */}
-            <h1 className="product-name" style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: "1.05", fontWeight: 400, marginBottom: "20px", letterSpacing: "-.01em" }}>
+            <h1 className="product-name" style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: "1.05", fontWeight: 400, marginBottom: "12px", letterSpacing: "-.01em" }}>
               {product.name}
             </h1>
+
+            {product.sku && (
+              <div style={{ fontSize: "11px", color: "var(--text-dim)", letterSpacing: ".1em", marginBottom: "16px" }}>
+                Артикул: <span style={{ fontWeight: 500, color: "var(--text)" }}>{product.sku}</span>
+              </div>
+            )}
 
             {/* Rating + sold */}
             <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px", flexWrap: "wrap" }}>
