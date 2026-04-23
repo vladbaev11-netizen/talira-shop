@@ -10,6 +10,7 @@ import { urlFor } from "@/sanity/image";
 import SaleTimer from "@/components/SaleTimer";
 import Link from "next/link";
 import { PortableText } from "next-sanity";
+import ReviewsCarousel from "@/components/ReviewsCarousel";
 
 async function getProduct(slug: string) {
   return client.fetch(
@@ -127,15 +128,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", marginLeft: "4px" }}>4.9</span>
               </div>
               <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>
-                <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>
-                  {allReviews?.length || 0} {"відгуків"}
-                </span>
-                <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>
-                  {soldCount}+ {"продано"}
-                </span>
+               {allReviews?.length || 0} {"відгуків"}
               </span>
               <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>
-                {soldCount}+ продано
+                {soldCount}+ {"продано"}
               </span>
             </div>
 
@@ -283,41 +279,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   </svg>
                 ))}
                 <span style={{ fontSize: "18px", fontWeight: 700, color: "var(--ink)", marginLeft: "8px" }}>4.9</span>
-                <span style={{ fontSize: "14px", color: "var(--text-dim)", marginLeft: "4px" }}>({allReviews.length} відгуків)</span>
+                <span style={{ fontSize: "14px", color: "var(--text-dim)", marginLeft: "4px" }}>({allReviews.length} {"відгуків"})</span>
               </div>
             </div>
-            <div className="grid-reviews">
-              {allReviews.map((review: { name: string; city?: string; rating?: number; text: string }, i: number) => (
-                <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "8px", padding: "32px", position: "relative" }}>
-                  {/* Quote mark */}
-                  <div style={{ position: "absolute", top: "16px", right: "20px", fontFamily: "'Cormorant Garamond', serif", fontSize: "60px", lineHeight: "1", color: "var(--line-soft)" }}>&ldquo;</div>
-                  <div style={{ display: "flex", gap: "4px", marginBottom: "16px" }}>
-                    {[1,2,3,4,5].map(s => (
-                      <svg key={s} width="16" height="16" viewBox="0 0 24 24" fill={s <= (review.rating || 5) ? "var(--gold-deep)" : "var(--line)"} stroke="none">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                    ))}
-                  </div>
-                  <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "18px", lineHeight: "1.5", marginBottom: "24px", color: "var(--ink)", position: "relative", zIndex: 1 }}>
-                    &ldquo;{review.text}&rdquo;
-                  </p>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", paddingTop: "18px", borderTop: "1px solid var(--line-soft)" }}>
-                    <div style={{ width: "44px", height: "44px", borderRadius: "50%", background: "linear-gradient(135deg, var(--gold-deep), var(--gold-soft))", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 600, flexShrink: 0 }}>
-                      {review.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)" }}>{review.name}</div>
-                      {review.city && (
-                        <div style={{ fontSize: "11px", color: "var(--text-dim)", display: "flex", alignItems: "center", gap: "6px", marginTop: "2px" }}>
-                          📍 {review.city}
-                          <span style={{ color: "var(--gold-deep)", fontWeight: 600 }}>✓ Verified</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ReviewsCarousel reviews={allReviews} />
           </div>
         </section>
       )}
