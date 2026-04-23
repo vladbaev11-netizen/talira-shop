@@ -77,7 +77,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       {/* Breadcrumbs */}
       <div className="container-pad" style={{ maxWidth: "1320px", margin: "0 auto", padding: "16px 48px", fontSize: "11px", letterSpacing: ".15em", textTransform: "uppercase", color: "var(--text-dim)" }}>
-        <Link href="/" style={{ color: "var(--text)" }}>Головна</Link>
+        <Link href="/" style={{ color: "var(--text)" }}>Каталог</Link>
         <span style={{ margin: "0 10px" }}>/</span>
         {product.category && (
           <>
