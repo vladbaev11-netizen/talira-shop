@@ -155,7 +155,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", marginLeft: "4px" }}>4.9</span>
               </div>
               <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>
-                allReviews?.length || 0} відгуків
+                {allReviews?.length || 0} {"відгуків"}
               </span>
               <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>
                 {soldCount}+ продано
