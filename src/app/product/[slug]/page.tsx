@@ -73,11 +73,38 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <>
+      {/* Schema.org Product */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.name,
+            description: product.shortDescription || "",
+            sku: product.sku || product.slug.current,
+            image: allImages[0] ? urlFor(allImages[0]).width(800).height(800).url() : undefined,
+            offers: {
+              "@type": "Offer",
+              price: product.price,
+              priceCurrency: "UAH",
+              availability: product.inStock !== false ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+              seller: { "@type": "Organization", name: "TALIRA" },
+            },
+            aggregateRating: allReviews.length > 0 ? {
+              "@type": "AggregateRating",
+              ratingValue: (allReviews.reduce((sum: number, r: any) => sum + (r.rating || 5), 0) / allReviews.length).toFixed(1),
+              reviewCount: allReviews.length,
+            } : undefined,
+          }),
+        }}
+      />
+
       <Header />
 
       {/* Breadcrumbs */}
       <div className="container-pad" style={{ maxWidth: "1320px", margin: "0 auto", padding: "16px 48px", fontSize: "11px", letterSpacing: ".15em", textTransform: "uppercase", color: "var(--text-dim)" }}>
-        <Link href="/" style={{ color: "var(--text)" }}>Каталог</Link>
+        <Link href="/catalog" style={{ color: "var(--text)" }}>Каталог</Link>
         <span style={{ margin: "0 10px" }}>/</span>
         {product.category && (
           <>
@@ -128,10 +155,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", marginLeft: "4px" }}>4.9</span>
               </div>
               <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>
-               {allReviews?.length || 0} {"відгуків"}
+                allReviews?.length || 0} відгуків
               </span>
               <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>
-                {soldCount}+ {"продано"}
+                {soldCount}+ продано
               </span>
             </div>
 
