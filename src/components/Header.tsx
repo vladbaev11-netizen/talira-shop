@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import SearchModal from "./SearchModal";
 
 const navItems = [
   { href: "/", label: "Головна" },
@@ -15,6 +16,7 @@ const navItems = [
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
 
   return (
@@ -59,12 +61,14 @@ export default function Header() {
                 </Link>
               ))}
             </nav>
-            <button style={{ background: "transparent", border: "none", color: "var(--ink-soft)", width: "42px", height: "42px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <button onClick={() => setSearchOpen(true)} style={{ background: "transparent", border: "none", color: "var(--ink-soft)", width: "42px", height: "42px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.35-4.35" /></svg>
             </button>
           </div>
         </div>
       </header>
+
+      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* Mobile menu — full screen with proper top padding */}
       {menuOpen && (
