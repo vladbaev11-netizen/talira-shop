@@ -66,7 +66,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-HP1NGWPK5G"></script>
-<script dangerouslySetInnerHTML={{ __html: window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-HP1NGWPK5G'); }} />
+<script dangerouslySetInnerHTML={{ __html: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-HP1NGWPK5G')" }} />
         <meta name="google-site-verification" content="CEO2PrkPXv-ELO6n4OycsHxD62VRF6781KwlyXY6gLY" />
         <script
           type="application/ld+json"
