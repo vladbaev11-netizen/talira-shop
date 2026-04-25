@@ -3,6 +3,7 @@ import "./globals.css";
 import FacebookPixel from "@/components/FacebookPixel";
 import { CartProvider } from "@/components/CartContext";
 import FloatingCart from "@/components/FloatingCart";
+import TelegramButton from "@/components/TelegramButton";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -96,6 +97,7 @@ export default function RootLayout({
         <CartProvider>
           {children}
           <FloatingCart />
+          <TelegramButton />
         </CartProvider>
         <FacebookPixel />
       </body>
