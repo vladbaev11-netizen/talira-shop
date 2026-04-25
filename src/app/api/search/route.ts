@@ -9,15 +9,13 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const searchQuery = q + "*";
     const products = await client.fetch(
-      `*[_type == "product" && (
-        name match $query ||
-        sku match $query
-      )] | order(name asc) [0...10] {
+      `*[_type == "product" && (name match $searchQuery || sku match $searchQuery)] | order(name asc) [0...10] {
         name, slug, price, oldPrice, mainImage,
         "category": category->{ name }
       }`,
-      { query: q + "*" }
+      { searchQuery } as any
     );
 
     return NextResponse.json({ products });
