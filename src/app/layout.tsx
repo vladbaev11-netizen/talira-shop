@@ -66,6 +66,8 @@ export default function RootLayout({
     <html lang="uk">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/icon-192.png" />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-HP1NGWPK5G"></script>
 <script dangerouslySetInnerHTML={{ __html: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-HP1NGWPK5G')" }} />
         <meta name="google-site-verification" content="CEO2PrkPXv-ELO6n4OycsHxD62VRF6781KwlyXY6gLY" />
