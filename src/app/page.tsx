@@ -3,31 +3,30 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import HeroSlider from "@/components/HeroSlider";
+import CategoryCarousel from "@/components/CategoryCarousel";
 import Link from "next/link";
-import Image from "next/image";
-import { urlFor } from "@/sanity/image";
 
 async function getProducts() {
-  return client.fetch(`
-    *[_type == "product"] | order(_createdAt desc) [0...12] {
-      name, slug, price, oldPrice, badge, mainImage,
-      "category": category->{ name }
-    }
-  `);
+  return client.fetch(`*[_type == "product"] | order(_createdAt desc) [0...12] {
+    name, slug, price, oldPrice, badge, mainImage,
+    "category": category->{ name }
+  }`);
+}
+
+async function getTotalCount() {
+  return client.fetch(`count(*[_type == "product"])`);
 }
 
 async function getCategories() {
-  return client.fetch(`
-    *[_type == "category"] | order(order asc) {
-      name, slug, description, image
-    }
-  `);
+  return client.fetch(`*[_type == "category"] | order(order asc) {
+    name, slug, description, image
+  }`);
 }
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+  const [products, totalCount, categories] = await Promise.all([getProducts(), getTotalCount(), getCategories()]);
 
   return (
     <>
@@ -38,31 +37,25 @@ export default async function HomePage() {
         <div className="container-pad grid-hero" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
           <div style={{ padding: "32px 0", display: "flex", flexDirection: "column", justifyContent: "center" }}>
             <div style={{ fontSize: "10px", letterSpacing: ".25em", textTransform: "uppercase", color: "var(--gold-deep)", fontWeight: 500, marginBottom: "16px" }}>
-              Нова колекція · 2026
+              {"Нова колекція · 2026"}
             </div>
             <h1 className="title-hero" style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: "1", fontWeight: 400, letterSpacing: "-.01em", marginBottom: "24px" }}>
-              Преміум-товари для дому,{" "}
-              <em style={{ color: "var(--gold-deep)", fontStyle: "italic", fontWeight: 300 }}>краси та здоров&apos;я</em>
+              {"Преміум-товари для дому, "}
+              <em style={{ color: "var(--gold-deep)", fontStyle: "italic", fontWeight: 300 }}>{"краси та здоров\u0027я"}</em>
             </h1>
             <div style={{ display: "flex", gap: "14px", alignItems: "center", marginBottom: "24px" }}>
               <Link href="/catalog" style={{ background: "var(--ink)", color: "var(--bg)", padding: "14px 28px", fontSize: "10px", fontWeight: 500, letterSpacing: ".22em", textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: "8px", borderRadius: "4px" }}>
-                Каталог
+                {"Каталог"}
                 <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
               </Link>
-              <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>{products.length} товарів</span>
+              <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>{totalCount} {"товарів"}</span>
             </div>
 
-            {/* Trust checkmarks */}
             <div style={{ paddingTop: "16px", borderTop: "1px solid var(--line-soft)" }}>
-              <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", marginBottom: "10px" }}>
+              <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
                 <MiniTrust text="Оплата при отриманні" />
                 <MiniTrust text="Доставка 1–3 дні" />
                 <MiniTrust text="Гарантія 14 днів" />
-              </div>
-              <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-                <MiniTrust text="Меблі з підсвіткою" />
-                <MiniTrust text="Б'юті та догляд" />
-                <MiniTrust text="Електроніка для дому" />
               </div>
             </div>
           </div>
@@ -71,28 +64,15 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CATEGORIES */}
+      {/* CATEGORIES CAROUSEL */}
       {categories.length > 0 && (
         <section style={{ padding: "40px 0", borderBottom: "1px solid var(--line)" }}>
           <div className="container-pad" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "26px", fontWeight: 400 }}>Категорії</h2>
-              <span style={{ fontSize: "11px", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--text-dim)" }}>{categories.length} колекції</span>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "26px", fontWeight: 400 }}>{"Категорії"}</h2>
+              <span style={{ fontSize: "11px", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--text-dim)" }}>{categories.length} {"колекцій"}</span>
             </div>
-            <div className="grid-cats" style={{ display: "grid", gridTemplateColumns: "repeat(" + categories.length + ", 1fr)", gap: "12px" }}>
-              {categories.map((cat: any, i: number) => (
-                <Link key={cat.slug?.current || i} href={"/catalog?category=" + (cat.slug?.current || "")}
-                  style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden", background: "linear-gradient(135deg, #e8dcc0 0%, #cdb88e 100%)", display: "block", borderRadius: "4px" }}
-                >
-                  {cat.image && cat.image.asset && (
-                    <Image src={urlFor(cat.image).width(400).height(225).url()} alt={cat.name} fill style={{ objectFit: "cover" }} sizes="25vw" />
-                  )}
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "16px", background: "linear-gradient(180deg, transparent 0%, rgba(26,22,18,.75) 100%)", color: "var(--bg)" }}>
-                    <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px", fontWeight: 400, lineHeight: "1.2" }}>{cat.name}</h3>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <CategoryCarousel categories={JSON.parse(JSON.stringify(categories))} />
           </div>
         </section>
       )}
@@ -102,8 +82,8 @@ export default async function HomePage() {
         <section style={{ padding: "48px 0 72px" }}>
           <div className="container-pad" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px", paddingBottom: "16px", borderBottom: "1px solid var(--line-soft)" }}>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "26px", fontWeight: 400 }}>Популярні товари</h2>
-              <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>{products.length} товарів</span>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "26px", fontWeight: 400 }}>{"Популярні товари"}</h2>
+              <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>{totalCount} {"товарів"}</span>
             </div>
             <div className="grid-4">
               {products.map((product: any) => (
@@ -112,7 +92,7 @@ export default async function HomePage() {
             </div>
             <div style={{ textAlign: "center", marginTop: "40px" }}>
               <Link href="/catalog" style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "14px 36px", border: "1px solid var(--ink)", color: "var(--ink)", fontSize: "11px", fontWeight: 500, letterSpacing: ".22em", textTransform: "uppercase", borderRadius: "4px" }}>
-                Весь каталог
+                {"Весь каталог"}
                 <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
               </Link>
             </div>

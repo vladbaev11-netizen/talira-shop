@@ -18,10 +18,13 @@ export default function Footer() {
             </div>
           </div>
           <FooterCol title="Каталог">
-            <FooterLink href="/catalog">{"Все для кухні"}</FooterLink>
-            <FooterLink href="/catalog">{"Електроніка"}</FooterLink>
-            <FooterLink href="/catalog">{"Краса та догляд"}</FooterLink>
-            <FooterLink href="/catalog">{"Дім та сад"}</FooterLink>
+            <FooterLink href="/catalog?category=kuhnia">{"Все для кухні"}</FooterLink>
+            <FooterLink href="/catalog?category=elektronika-dlia-domu">{"Електроніка"}</FooterLink>
+            <FooterLink href="/catalog?category=krasa-ta-dohliad">{"Краса та догляд"}</FooterLink>
+            <FooterLink href="/catalog?category=dim-ta-sad">{"Дім та сад"}</FooterLink>
+            <FooterLink href="/catalog?category=zdorovia-ta-masazhery">{"Здоров\u0027я"}</FooterLink>
+            <FooterLink href="/catalog?category=dytiachi-tovary">{"Дитячі товари"}</FooterLink>
+            <FooterLink href="/catalog?category=avto-ta-instrument">{"Авто та інструмент"}</FooterLink>
           </FooterCol>
           <FooterCol title="Допомога">
             <FooterLink href="/delivery">{"Доставка та оплата"}</FooterLink>
@@ -30,8 +33,10 @@ export default function Footer() {
             <FooterLink href="/contacts">{"Контакти"}</FooterLink>
           </FooterCol>
           <FooterCol title="Контакти">
+            <FooterLink href="tel:+380635294105">{"+380 63 529 41 05"}</FooterLink>
             <FooterLink href="https://t.me/talira_com_ua">{"Telegram: @talira_com_ua"}</FooterLink>
             <FooterLink href="https://www.instagram.com/talira.com.ua">{"Instagram: @talira.com.ua"}</FooterLink>
+            <FooterLink href="mailto:talira.com.ua@gmail.com">{"talira.com.ua@gmail.com"}</FooterLink>
           </FooterCol>
         </div>
         <div style={{ paddingTop: "32px", borderTop: "1px solid rgba(245,241,232,.1)", display: "flex", justifyContent: "space-between", color: "rgba(245,241,232,.4)", fontSize: "11px", letterSpacing: ".15em", textTransform: "uppercase", flexWrap: "wrap", gap: "12px" }}>
