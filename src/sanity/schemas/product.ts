@@ -145,7 +145,8 @@ export const product = defineType({
           ],
           preview: {
             select: { title: "name", subtitle: "text", approved: "approved" },
-            prepare({ title, subtitle, approved }: { title: string; subtitle: string; approved: boolean }) {
+           prepare(selection: Record<string, any>) {
+              const { title, subtitle, approved } = selection;
               return {
                 title: (approved ? "✅ " : "❌ ") + title,
                 subtitle,
