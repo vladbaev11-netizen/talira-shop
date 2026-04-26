@@ -19,22 +19,21 @@ export const category = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "description",
-      title: "Опис категорії",
-      type: "text",
-      rows: 3,
-    }),
-    defineField({
       name: "image",
-      title: "Обкладинка категорії",
+      title: "Фото категорії",
       type: "image",
       options: { hotspot: true },
     }),
     defineField({
+      name: "description",
+      title: "Опис",
+      type: "text",
+      rows: 3,
+    }),
+    defineField({
       name: "order",
-      title: "Порядок відображення",
+      title: "Порядок сортування",
       type: "number",
-      initialValue: 0,
     }),
   ],
   preview: {
