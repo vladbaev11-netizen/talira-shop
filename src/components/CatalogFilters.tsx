@@ -15,16 +15,8 @@ interface Product {
   subcategory?: { name: string; slug: { current: string }; parentCategory?: { slug: { current: string } } };
 }
 
-interface Category {
-  name: string;
-  slug: { current: string };
-}
-
-interface Subcategory {
-  name: string;
-  slug: { current: string };
-  parentCategory: { slug: { current: string } };
-}
+interface Category { name: string; slug: { current: string }; }
+interface Subcategory { name: string; slug: { current: string }; parentCategory: { slug: { current: string } }; }
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name";
 const PAGE_SIZE = 24;
@@ -32,6 +24,8 @@ const PAGE_SIZE = 24;
 export default function CatalogFilters({ products, categories, subcategories }: { products: Product[]; categories: Category[]; subcategories: Subcategory[] }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
+  const [activeCategoryName, setActiveCategoryName] = useState<string>("");
+  const [activeSubcategoryName, setActiveSubcategoryName] = useState<string>("");
   const [sort, setSort] = useState<SortOption>("newest");
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [onlySale, setOnlySale] = useState(false);
@@ -57,80 +51,80 @@ export default function CatalogFilters({ products, categories, subcategories }: 
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
 
-  // Get subcategories for active category
-  const activeSubs = activeCategory
-    ? subcategories.filter((s) => s.parentCategory?.slug?.current === activeCategory)
-    : [];
-
   const categoryCount = (slug: string) => products.filter((p) => p.category?.slug?.current === slug).length;
   const subcategoryCount = (slug: string) => products.filter((p) => p.subcategory?.slug?.current === slug).length;
 
-  function handleCategoryChange(slug: string | null) {
+  function selectCategory(slug: string | null, name: string) {
     setActiveCategory(slug);
     setActiveSubcategory(null);
+    setActiveCategoryName(name);
+    setActiveSubcategoryName("");
     setVisibleCount(PAGE_SIZE);
   }
 
-  function handleSubcategoryChange(slug: string | null) {
+  function selectSubcategory(slug: string, name: string, parentSlug: string, parentName: string) {
+    setActiveCategory(parentSlug);
     setActiveSubcategory(slug);
+    setActiveCategoryName(parentName);
+    setActiveSubcategoryName(name);
     setVisibleCount(PAGE_SIZE);
   }
-
-  const tabStyle = (isActive: boolean): React.CSSProperties => ({
-    padding: "10px 20px",
-    background: isActive ? "var(--ink)" : "transparent",
-    color: isActive ? "var(--bg)" : "var(--ink)",
-    border: isActive ? "1px solid var(--ink)" : "1px solid var(--line)",
-    fontSize: "11px",
-    letterSpacing: ".18em",
-    textTransform: "uppercase",
-    fontWeight: 500,
-    cursor: "pointer",
-    transition: "all .2s",
-    fontFamily: "'Inter', sans-serif",
-    whiteSpace: "nowrap",
-  });
-
-  const subTabStyle = (isActive: boolean): React.CSSProperties => ({
-    padding: "8px 16px",
-    background: isActive ? "var(--gold-deep)" : "transparent",
-    color: isActive ? "#fff" : "var(--text)",
-    border: isActive ? "1px solid var(--gold-deep)" : "1px solid var(--line-soft)",
-    fontSize: "11px",
-    letterSpacing: ".12em",
-    textTransform: "uppercase",
-    fontWeight: 500,
-    cursor: "pointer",
-    borderRadius: "20px",
-    fontFamily: "'Inter', sans-serif",
-    whiteSpace: "nowrap",
-  });
 
   return (
     <div>
-      {/* Categories */}
-      <div className="filter-tabs" style={{ marginBottom: "16px" }}>
-        <button onClick={() => handleCategoryChange(null)} style={tabStyle(activeCategory === null)}>{"Все"} ({products.length})</button>
-        {categories.map((cat) => (
-          <button key={cat.slug.current} onClick={() => handleCategoryChange(activeCategory === cat.slug.current ? null : cat.slug.current)} style={tabStyle(activeCategory === cat.slug.current)}>
-            {cat.name} ({categoryCount(cat.slug.current)})
-          </button>
-        ))}
+      {/* Category bar with dropdowns */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "0", marginBottom: "20px", borderBottom: "2px solid var(--ink)" }}>
+        <CatTab
+          label={"Все"}
+          count={products.length}
+          isActive={activeCategory === null}
+          onClick={() => selectCategory(null, "")}
+          subcategories={[]}
+          onSubClick={() => {}}
+        />
+        {categories.map((cat) => {
+          const subs = subcategories.filter(s => s.parentCategory?.slug?.current === cat.slug.current);
+          return (
+            <CatTab
+              key={cat.slug.current}
+              label={cat.name}
+              count={categoryCount(cat.slug.current)}
+              isActive={activeCategory === cat.slug.current}
+              onClick={() => selectCategory(cat.slug.current, cat.name)}
+              subcategories={subs.map(s => ({
+                name: s.name,
+                slug: s.slug.current,
+                count: subcategoryCount(s.slug.current),
+              }))}
+              onSubClick={(subSlug, subName) => selectSubcategory(subSlug, subName, cat.slug.current, cat.name)}
+            />
+          );
+        })}
       </div>
 
-      {/* Subcategories */}
-      {activeSubs.length > 0 && (
-        <div className="filter-tabs" style={{ marginBottom: "24px" }}>
-          <button onClick={() => handleSubcategoryChange(null)} style={subTabStyle(activeSubcategory === null)}>{"Все"}</button>
-          {activeSubs.map((sub) => {
-            const count = subcategoryCount(sub.slug.current);
-            if (count === 0) return null;
-            return (
-              <button key={sub.slug.current} onClick={() => handleSubcategoryChange(activeSubcategory === sub.slug.current ? null : sub.slug.current)} style={subTabStyle(activeSubcategory === sub.slug.current)}>
-                {sub.name} ({count})
+      {/* Active filter breadcrumb */}
+      {(activeCategory || activeSubcategory) && (
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px", fontSize: "13px" }}>
+          <button onClick={() => selectCategory(null, "")} style={{ background: "none", border: "none", color: "var(--gold-deep)", cursor: "pointer", fontFamily: "'Inter', sans-serif", fontSize: "13px" }}>
+            {"Все товари"}
+          </button>
+          {activeCategoryName && (
+            <>
+              <span style={{ color: "var(--text-dim)" }}>/</span>
+              <button onClick={() => { setActiveSubcategory(null); setActiveSubcategoryName(""); setVisibleCount(PAGE_SIZE); }} style={{ background: "none", border: "none", color: activeSubcategory ? "var(--gold-deep)" : "var(--ink)", cursor: "pointer", fontFamily: "'Inter', sans-serif", fontSize: "13px", fontWeight: activeSubcategory ? 400 : 600 }}>
+                {activeCategoryName}
               </button>
-            );
-          })}
+            </>
+          )}
+          {activeSubcategoryName && (
+            <>
+              <span style={{ color: "var(--text-dim)" }}>/</span>
+              <span style={{ color: "var(--ink)", fontWeight: 600 }}>{activeSubcategoryName}</span>
+            </>
+          )}
+          <button onClick={() => selectCategory(null, "")} style={{ marginLeft: "auto", background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer", fontSize: "12px", textDecoration: "underline" }}>
+            {"Скинути"}
+          </button>
         </div>
       )}
 
@@ -175,10 +169,100 @@ export default function CatalogFilters({ products, categories, subcategories }: 
           <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "28px", marginBottom: "12px", color: "var(--ink)" }}>{"Товарів не знайдено"}</div>
           <p style={{ fontSize: "14px" }}>
             {"Спробуйте змінити фільтри або "}
-            <button onClick={() => { handleCategoryChange(null); setOnlyInStock(false); setOnlySale(false); }} style={{ background: "none", border: "none", borderBottom: "1px solid var(--gold-deep)", color: "var(--gold-deep)", cursor: "pointer", fontSize: "14px", fontFamily: "inherit", padding: 0 }}>
+            <button onClick={() => { selectCategory(null, ""); setOnlyInStock(false); setOnlySale(false); }} style={{ background: "none", border: "none", borderBottom: "1px solid var(--gold-deep)", color: "var(--gold-deep)", cursor: "pointer", fontSize: "14px", fontFamily: "inherit", padding: 0 }}>
               {"скинути всі фільтри"}
             </button>
           </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CatTab({ label, count, isActive, onClick, subcategories, onSubClick }: {
+  label: string; count: number; isActive: boolean; onClick: () => void;
+  subcategories: { name: string; slug: string; count: number }[];
+  onSubClick: (slug: string, name: string) => void;
+}) {
+  const [hover, setHover] = useState(false);
+  const showDropdown = hover && subcategories.length > 0;
+
+  return (
+    <div
+      style={{ position: "relative" }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <button
+        onClick={onClick}
+        style={{
+          padding: "14px 20px",
+          background: isActive ? "var(--ink)" : hover ? "var(--paper)" : "transparent",
+          color: isActive ? "var(--bg)" : "var(--ink)",
+          border: "none",
+          fontSize: "11px",
+          letterSpacing: ".15em",
+          textTransform: "uppercase",
+          fontWeight: isActive ? 600 : 500,
+          cursor: "pointer",
+          fontFamily: "'Inter', sans-serif",
+          whiteSpace: "nowrap",
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          transition: "all .2s",
+        }}
+      >
+        {label}
+        <span style={{ fontSize: "10px", color: isActive ? "var(--gold-soft)" : "var(--text-dim)" }}>({count})</span>
+        {subcategories.length > 0 && (
+          <svg width="10" height="10" fill="none" stroke={isActive ? "var(--gold-soft)" : "var(--text-dim)"} strokeWidth="2" viewBox="0 0 24 24" style={{ transition: "transform .2s", transform: showDropdown ? "rotate(180deg)" : "none" }}>
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        )}
+      </button>
+
+      {/* Dropdown */}
+      {showDropdown && (
+        <div style={{
+          position: "absolute",
+          top: "100%",
+          left: "0",
+          background: "var(--bg-card)",
+          border: "1px solid var(--line-soft)",
+          borderRadius: "0 0 8px 8px",
+          boxShadow: "0 8px 24px rgba(26,22,18,.12)",
+          zIndex: 50,
+          minWidth: "220px",
+          overflow: "hidden",
+        }}>
+          {subcategories.filter(s => s.count > 0).map((sub) => (
+            <button
+              key={sub.slug}
+              onClick={(e) => { e.stopPropagation(); onSubClick(sub.slug, sub.name); setHover(false); }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+                padding: "12px 18px",
+                background: "transparent",
+                border: "none",
+                borderBottom: "1px solid var(--line-soft)",
+                cursor: "pointer",
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "13px",
+                color: "var(--ink)",
+                textAlign: "left",
+                transition: "background .15s",
+              }}
+              onMouseEnter={(e) => { (e.target as HTMLElement).style.background = "var(--paper)"; }}
+              onMouseLeave={(e) => { (e.target as HTMLElement).style.background = "transparent"; }}
+            >
+              <span>{sub.name}</span>
+              <span style={{ fontSize: "11px", color: "var(--text-dim)" }}>{sub.count}</span>
+            </button>
+          ))}
         </div>
       )}
     </div>
