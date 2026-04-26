@@ -180,7 +180,8 @@ export const product = defineType({
       price: "price",
       media: "mainImage",
     },
-    prepare({ title, subtitle, price, media }: { title: string; subtitle: string; price: number; media: any }) {
+    prepare(selection: Record<string, any>) {
+      const { title, subtitle, price, media } = selection;
       return {
         title,
         subtitle: [subtitle, price ? price + " ₴" : ""].filter(Boolean).join(" · "),
