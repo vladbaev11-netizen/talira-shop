@@ -12,6 +12,12 @@ export const product = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "sku",
+      title: "Артикул (код товару)",
+      type: "string",
+      description: "Унікальний код товару для пошуку та роботи з клієнтами",
+    }),
+    defineField({
       name: "slug",
       title: "URL (slug)",
       type: "slug",
@@ -24,6 +30,12 @@ export const product = defineType({
       type: "reference",
       to: [{ type: "category" }],
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "subcategory",
+      title: "Підкатегорія",
+      type: "reference",
+      to: [{ type: "subcategory" }],
     }),
     defineField({
       name: "price",
@@ -123,9 +135,22 @@ export const product = defineType({
             { name: "city", title: "Місто", type: "string" },
             { name: "rating", title: "Рейтинг (1-5)", type: "number" },
             { name: "text", title: "Текст відгуку", type: "text" },
+            {
+              name: "approved",
+              title: "Опублікований",
+              type: "boolean",
+              initialValue: true,
+              description: "Зніміть галочку щоб приховати відгук",
+            },
           ],
           preview: {
-            select: { title: "name", subtitle: "text" },
+            select: { title: "name", subtitle: "text", approved: "approved" },
+            prepare({ title, subtitle, approved }: { title: string; subtitle: string; approved: boolean }) {
+              return {
+                title: (approved ? "✅ " : "❌ ") + title,
+                subtitle,
+              };
+            },
           },
         },
       ],
@@ -151,13 +176,14 @@ export const product = defineType({
   preview: {
     select: {
       title: "name",
-      subtitle: "price",
+      subtitle: "sku",
+      price: "price",
       media: "mainImage",
     },
-    prepare({ title, subtitle, media }) {
+    prepare({ title, subtitle, price, media }: { title: string; subtitle: string; price: number; media: any }) {
       return {
         title,
-        subtitle: subtitle ? `${subtitle} ₴` : "",
+        subtitle: [subtitle, price ? price + " ₴" : ""].filter(Boolean).join(" · "),
         media,
       };
     },
