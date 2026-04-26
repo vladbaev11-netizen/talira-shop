@@ -236,6 +236,19 @@ function CatTab({ label, count, isActive, onClick, subcategories, onSubClick }: 
           minWidth: "220px",
           overflow: "hidden",
         }}>
+          <button
+              onClick={(e) => { e.stopPropagation(); onClick(); setHover(false); }}
+              style={{
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+                width: "100%", padding: "12px 18px", background: "transparent", border: "none",
+                borderBottom: "1px solid var(--line-soft)", cursor: "pointer",
+                fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "var(--gold-deep)",
+                textAlign: "left", fontWeight: 600,
+              }}
+            >
+              <span>{"Всі товари"}</span>
+              <span style={{ fontSize: "11px", color: "var(--text-dim)" }}>{count}</span>
+            </button>
           {subcategories.filter(s => s.count > 0).map((sub) => (
             <button
               key={sub.slug}
