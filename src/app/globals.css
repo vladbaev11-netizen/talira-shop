@@ -387,3 +387,15 @@ img { max-width: 100%; height: auto; }
     gap: 12px !important;
   }
 }
+.grid-n7-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .grid-n7-cards {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
