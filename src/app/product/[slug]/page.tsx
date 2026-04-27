@@ -11,7 +11,6 @@ import SaleTimer from "@/components/SaleTimer";
 import Link from "next/link";
 import { PortableText } from "next-sanity";
 import ReviewsCarousel from "@/components/ReviewsCarousel";
-import PromoBlocks from "@/components/PromoBlocks";
 
 async function getProduct(slug: string) {
   return client.fetch(
@@ -263,9 +262,85 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </section>
 
       {/* ============================================ */}
-      {/* PROMO BLOCKS — individual per product */}
+      {/* GALLERY — Товар зблизька */}
       {/* ============================================ */}
-      <PromoBlocks sku={product.sku || ""} images={allImages} productName={product.name} />
+      {allImages.length > 2 && (
+        <section style={{ padding: "60px 0", background: "var(--bg-soft)" }}>
+          <div className="container-pad" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 48px" }}>
+            <h2 className="title-section" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, textAlign: "center", marginBottom: "32px" }}>
+              {"Товар "}<em style={{ color: "var(--gold-deep)", fontStyle: "italic" }}>{"зблизька"}</em>
+            </h2>
+            <div className="grid-n7-gallery" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
+              {allImages.slice(0, 4).map((img: any, i: number) => (
+                <div key={i} style={{ aspectRatio: "1", position: "relative", borderRadius: "8px", overflow: "hidden" }}>
+                  <img src={urlFor(img).width(400).height(400).url()} alt={product.name + " " + (i + 1)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ============================================ */}
+      {/* HOW TO ORDER — Як оформити замовлення */}
+      {/* ============================================ */}
+      <section style={{ padding: "80px 0", background: "var(--bg)" }}>
+        <div className="container-pad" style={{ maxWidth: "900px", margin: "0 auto", padding: "0 48px" }}>
+          <h2 className="title-section" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, textAlign: "center", marginBottom: "48px" }}>
+            {"Як оформити "}<em style={{ color: "var(--gold-deep)", fontStyle: "italic" }}>{"замовлення?"}</em>
+          </h2>
+          <div className="grid-n7-cards" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "40px", textAlign: "center" }}>
+            <div>
+              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "48px", fontStyle: "italic", color: "var(--gold-deep)", fontWeight: 300, lineHeight: 1, marginBottom: "16px" }}>{"01"}</div>
+              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 500, marginBottom: "8px" }}>{"Додайте в кошик"}</h4>
+              <p style={{ fontSize: "14px", color: "var(--text)", lineHeight: "1.6" }}>{"Натисніть кнопку «Додати в кошик» та перейдіть до оформлення"}</p>
+            </div>
+            <div>
+              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "48px", fontStyle: "italic", color: "var(--gold-deep)", fontWeight: 300, lineHeight: 1, marginBottom: "16px" }}>{"02"}</div>
+              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 500, marginBottom: "8px" }}>{"Вкажіть дані"}</h4>
+              <p style={{ fontSize: "14px", color: "var(--text)", lineHeight: "1.6" }}>{"Ім\u0027я, телефон та відділення Нової Пошти для доставки"}</p>
+            </div>
+            <div>
+              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "48px", fontStyle: "italic", color: "var(--gold-deep)", fontWeight: 300, lineHeight: 1, marginBottom: "16px" }}>{"03"}</div>
+              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 500, marginBottom: "8px" }}>{"Оплата при отриманні"}</h4>
+              <p style={{ fontSize: "14px", color: "var(--text)", lineHeight: "1.6" }}>{"Перевірте товар на пошті та оплатіть тільки після огляду"}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================ */}
+      {/* WHY TALIRA */}
+      {/* ============================================ */}
+      <section style={{ padding: "80px 0", background: "var(--paper)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
+        <div className="container-pad" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 48px" }}>
+          <h2 className="title-section" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, textAlign: "center", marginBottom: "48px" }}>
+            {"Чому "}<em style={{ color: "var(--gold-deep)", fontStyle: "italic" }}>{"TALIRA?"}</em>
+          </h2>
+          <div className="grid-4">
+            <div style={{ textAlign: "center", padding: "28px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
+              <div style={{ fontSize: "28px", marginBottom: "12px" }}>{"📦"}</div>
+              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "19px", fontWeight: 500, marginBottom: "8px" }}>{"Швидка доставка"}</h4>
+              <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Відправляємо Новою Поштою 1–3 дні по всій Україні"}</p>
+            </div>
+            <div style={{ textAlign: "center", padding: "28px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
+              <div style={{ fontSize: "28px", marginBottom: "12px" }}>{"💰"}</div>
+              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "19px", fontWeight: 500, marginBottom: "8px" }}>{"Без передоплати"}</h4>
+              <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Оплата тільки при отриманні після перевірки товару"}</p>
+            </div>
+            <div style={{ textAlign: "center", padding: "28px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
+              <div style={{ fontSize: "28px", marginBottom: "12px" }}>{"🔄"}</div>
+              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "19px", fontWeight: 500, marginBottom: "8px" }}>{"Повернення 14 днів"}</h4>
+              <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Не підійшов товар — повернемо гроші без зайвих питань"}</p>
+            </div>
+            <div style={{ textAlign: "center", padding: "28px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
+              <div style={{ fontSize: "28px", marginBottom: "12px" }}>{"⭐"}</div>
+              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "19px", fontWeight: 500, marginBottom: "8px" }}>{"12 000+ клієнтів"}</h4>
+              <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Середній рейтинг 4.9 — нам довіряють покупці по всій Україні"}</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ============================================ */}
       {/* SECTION 3: Full description */}
