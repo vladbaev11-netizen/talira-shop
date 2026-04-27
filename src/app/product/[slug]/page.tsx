@@ -310,39 +310,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </section>
 
       {/* ============================================ */}
-      {/* WHY TALIRA */}
-      {/* ============================================ */}
-      <section style={{ padding: "80px 0", background: "var(--paper)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
-        <div className="container-pad" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 48px" }}>
-          <h2 className="title-section" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, textAlign: "center", marginBottom: "48px" }}>
-            {"Чому "}<em style={{ color: "var(--gold-deep)", fontStyle: "italic" }}>{"TALIRA?"}</em>
-          </h2>
-          <div className="grid-4">
-            <div style={{ textAlign: "center", padding: "28px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
-              <div style={{ fontSize: "28px", marginBottom: "12px" }}>{"📦"}</div>
-              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "19px", fontWeight: 500, marginBottom: "8px" }}>{"Швидка доставка"}</h4>
-              <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Відправляємо Новою Поштою 1–3 дні по всій Україні"}</p>
-            </div>
-            <div style={{ textAlign: "center", padding: "28px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
-              <div style={{ fontSize: "28px", marginBottom: "12px" }}>{"💰"}</div>
-              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "19px", fontWeight: 500, marginBottom: "8px" }}>{"Без передоплати"}</h4>
-              <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Оплата тільки при отриманні після перевірки товару"}</p>
-            </div>
-            <div style={{ textAlign: "center", padding: "28px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
-              <div style={{ fontSize: "28px", marginBottom: "12px" }}>{"🔄"}</div>
-              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "19px", fontWeight: 500, marginBottom: "8px" }}>{"Повернення 14 днів"}</h4>
-              <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Не підійшов товар — повернемо гроші без зайвих питань"}</p>
-            </div>
-            <div style={{ textAlign: "center", padding: "28px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
-              <div style={{ fontSize: "28px", marginBottom: "12px" }}>{"⭐"}</div>
-              <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "19px", fontWeight: 500, marginBottom: "8px" }}>{"12 000+ клієнтів"}</h4>
-              <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Середній рейтинг 4.9 — нам довіряють покупці по всій Україні"}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================ */}
       {/* SECTION 3: Full description */}
       {/* ============================================ */}
       {product.description && (
