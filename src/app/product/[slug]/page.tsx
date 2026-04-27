@@ -253,6 +253,117 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </section>
 
       {/* ============================================ */}
+      {/* N7 EXCLUSIVE BLOCKS */}
+      {/* ============================================ */}
+      {product.slug.current === "kompaktnyy-bezdrotovyy-masazher-n7-z-pidihrivom-i-10-rezhymamy" && (
+        <>
+          {/* Problem / Solution */}
+          <section style={{ padding: "80px 0", background: "var(--bg)" }}>
+            <div className="container-pad" style={{ maxWidth: "900px", margin: "0 auto", padding: "0 48px", textAlign: "center" }}>
+              <h2 className="title-section" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, marginBottom: "20px" }}>
+                {"Біль у шиї та спині — "}<em style={{ color: "var(--gold-deep)", fontStyle: "italic" }}>{"знайоме?"}</em>
+              </h2>
+              <p style={{ fontSize: "16px", color: "var(--text)", lineHeight: "1.8", marginBottom: "48px", maxWidth: "640px", margin: "0 auto 48px" }}>
+                {"Сидяча робота, стрес, постійний телефон — все це створює напругу в м\u0027язах. Масажер N7 вирішує проблему за 15 хвилин на день."}
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "24px" }} className="grid-n7-cards">
+                <div style={{ padding: "32px 24px", background: "var(--paper)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
+                  <div style={{ fontSize: "36px", marginBottom: "16px" }}>{"😣"}</div>
+                  <div style={{ fontSize: "13px", color: "var(--text-dim)", textDecoration: "line-through", marginBottom: "8px" }}>{"Біль та скутість"}</div>
+                  <div style={{ fontSize: "15px", color: "var(--gold-deep)", fontWeight: 600 }}>{"Глибоке розслаблення"}</div>
+                </div>
+                <div style={{ padding: "32px 24px", background: "var(--paper)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
+                  <div style={{ fontSize: "36px", marginBottom: "16px" }}>{"🧊"}</div>
+                  <div style={{ fontSize: "13px", color: "var(--text-dim)", textDecoration: "line-through", marginBottom: "8px" }}>{"Холодні м\u0027язи"}</div>
+                  <div style={{ fontSize: "15px", color: "var(--gold-deep)", fontWeight: 600 }}>{"Інфрачервоний підігрів"}</div>
+                </div>
+                <div style={{ padding: "32px 24px", background: "var(--paper)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
+                  <div style={{ fontSize: "36px", marginBottom: "16px" }}>{"💸"}</div>
+                  <div style={{ fontSize: "13px", color: "var(--text-dim)", textDecoration: "line-through", marginBottom: "8px" }}>{"Дорогі масажисти"}</div>
+                  <div style={{ fontSize: "15px", color: "var(--gold-deep)", fontWeight: 600 }}>{"Масаж вдома щодня"}</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Why N7 */}
+          <section style={{ padding: "80px 0", background: "var(--paper)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
+            <div className="container-pad" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 48px" }}>
+              <h2 className="title-section" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, textAlign: "center", marginBottom: "48px" }}>
+                {"Чому саме "}<em style={{ color: "var(--gold-deep)", fontStyle: "italic" }}>{"N7?"}</em>
+              </h2>
+              <div className="grid-4">
+                <div style={{ textAlign: "center", padding: "32px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
+                  <div style={{ fontSize: "32px", marginBottom: "14px" }}>{"🔥"}</div>
+                  <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 500, marginBottom: "8px" }}>{"Підігрів"}</h4>
+                  <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Інфрачервоне прогрівання для глибокого розслаблення"}</p>
+                </div>
+                <div style={{ textAlign: "center", padding: "32px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
+                  <div style={{ fontSize: "32px", marginBottom: "14px" }}>{"⚡"}</div>
+                  <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 500, marginBottom: "8px" }}>{"10 режимів"}</h4>
+                  <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Від легкого до інтенсивного — підберіть свій"}</p>
+                </div>
+                <div style={{ textAlign: "center", padding: "32px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
+                  <div style={{ fontSize: "32px", marginBottom: "14px" }}>{"🔋"}</div>
+                  <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 500, marginBottom: "8px" }}>{"Бездротовий"}</h4>
+                  <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Вбудований акумулятор, зарядка через USB"}</p>
+                </div>
+                <div style={{ textAlign: "center", padding: "32px 16px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "12px" }}>
+                  <div style={{ fontSize: "32px", marginBottom: "14px" }}>{"🎯"}</div>
+                  <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 500, marginBottom: "8px" }}>{"5 зон тіла"}</h4>
+                  <p style={{ fontSize: "13px", color: "var(--text)", lineHeight: "1.5" }}>{"Шия, плечі, спина, руки, ноги"}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* How it works */}
+          <section style={{ padding: "80px 0", background: "var(--bg)" }}>
+            <div className="container-pad" style={{ maxWidth: "900px", margin: "0 auto", padding: "0 48px" }}>
+              <h2 className="title-section" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, textAlign: "center", marginBottom: "48px" }}>
+                {"Як це "}<em style={{ color: "var(--gold-deep)", fontStyle: "italic" }}>{"працює"}</em>
+              </h2>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "40px", textAlign: "center" }} className="grid-n7-cards">
+                <div>
+                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "48px", fontStyle: "italic", color: "var(--gold-deep)", fontWeight: 300, lineHeight: 1, marginBottom: "16px" }}>{"01"}</div>
+                  <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "22px", fontWeight: 500, marginBottom: "8px" }}>{"Оберіть зону"}</h4>
+                  <p style={{ fontSize: "14px", color: "var(--text)", lineHeight: "1.6" }}>{"Шия, плечі, спина — масажер адаптується"}</p>
+                </div>
+                <div>
+                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "48px", fontStyle: "italic", color: "var(--gold-deep)", fontWeight: 300, lineHeight: 1, marginBottom: "16px" }}>{"02"}</div>
+                  <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "22px", fontWeight: 500, marginBottom: "8px" }}>{"Увімкніть режим"}</h4>
+                  <p style={{ fontSize: "14px", color: "var(--text)", lineHeight: "1.6" }}>{"10 режимів інтенсивності + підігрів"}</p>
+                </div>
+                <div>
+                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "48px", fontStyle: "italic", color: "var(--gold-deep)", fontWeight: 300, lineHeight: 1, marginBottom: "16px" }}>{"03"}</div>
+                  <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "22px", fontWeight: 500, marginBottom: "8px" }}>{"Насолоджуйтесь"}</h4>
+                  <p style={{ fontSize: "14px", color: "var(--text)", lineHeight: "1.6" }}>{"15 хвилин — і напруга зникає"}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Extra gallery */}
+          {allImages.length > 2 && (
+            <section style={{ padding: "60px 0", background: "var(--bg-soft)" }}>
+              <div className="container-pad" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 48px" }}>
+                <h2 className="title-section" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, textAlign: "center", marginBottom: "32px" }}>
+                  {"Масажер "}<em style={{ color: "var(--gold-deep)", fontStyle: "italic" }}>{"зблизька"}</em>
+                </h2>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }} className="grid-n7-gallery">
+                  {allImages.slice(0, 4).map((img: any, i: number) => (
+                    <div key={i} style={{ aspectRatio: "1", position: "relative", borderRadius: "8px", overflow: "hidden" }}>
+                      <img src={urlFor(img).width(400).height(400).url()} alt={product.name + " " + (i + 1)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+        </>
+      )}
+
+      {/* ============================================ */}
       {/* SECTION 3: Full description */}
       {/* ============================================ */}
       {product.description && (

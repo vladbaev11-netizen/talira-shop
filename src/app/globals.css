@@ -364,3 +364,26 @@ img { max-width: 100%; height: auto; }
     grid-template-columns: 1fr !important;
   }
 }
+/* N7 promo blocks responsive */
+.grid-n7-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.grid-n7-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .grid-n7-cards {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .grid-n7-gallery {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+}
