@@ -1,6 +1,10 @@
 "use client";
 
 import promoData from "./promo-data.json";
+import imageUrlBuilder from "@sanity/image-url";
+
+const builder = imageUrlBuilder({ projectId: "777maat6", dataset: "production" });
+function imgUrl(source: any) { return builder.image(source); }
 
 interface PromoSection {
   problem_title: string;
@@ -12,7 +16,7 @@ interface PromoSection {
   steps: { num: string; title: string; desc: string }[];
 }
 
-export default function PromoBlocks({ sku }: { sku: string }) {
+export default function PromoBlocks({ sku, images, productName }: { sku: string; images?: any[]; productName?: string }) {
   const data = (promoData as Record<string, PromoSection>)[sku?.toLowerCase()] || null;
   if (!data) return null;
 
@@ -22,11 +26,7 @@ export default function PromoBlocks({ sku }: { sku: string }) {
       <section style={{ padding: "80px 0", background: "var(--bg)" }}>
         <div className="container-pad" style={{ maxWidth: "900px", margin: "0 auto", padding: "0 48px", textAlign: "center" }}>
           <h2 className="title-section" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, marginBottom: "20px" }}>
-            {data.problem_title.split("—")[0]}
-            {data.problem_title.includes("—") && (
-              <em style={{ color: "var(--gold-deep)", fontStyle: "italic" }}>{" — " + data.problem_title.split("—")[1]}</em>
-            )}
-            {!data.problem_title.includes("—") && data.problem_title.includes("?") && ""}
+            {data.problem_title}
           </h2>
           <p style={{ fontSize: "15px", color: "var(--text)", lineHeight: "1.8", marginBottom: "40px", maxWidth: "640px", margin: "0 auto 40px" }}>
             {data.problem_desc}
@@ -78,6 +78,24 @@ export default function PromoBlocks({ sku }: { sku: string }) {
           </div>
         </div>
       </section>
+
+      {/* Photo gallery */}
+      {images && images.length > 2 && (
+        <section style={{ padding: "60px 0", background: "var(--bg-soft)" }}>
+          <div className="container-pad" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 48px" }}>
+            <h2 className="title-section" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400, textAlign: "center", marginBottom: "32px" }}>
+              {"Товар "}<em style={{ color: "var(--gold-deep)", fontStyle: "italic" }}>{"зблизька"}</em>
+            </h2>
+            <div className="grid-n7-gallery" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
+              {images.slice(0, 4).map((img: any, i: number) => (
+                <div key={i} style={{ aspectRatio: "1", position: "relative", borderRadius: "8px", overflow: "hidden" }}>
+                  <img src={imgUrl(img).width(400).height(400).url()} alt={(productName || "Товар") + " " + (i + 1)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }

@@ -265,7 +265,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       {/* ============================================ */}
       {/* PROMO BLOCKS — individual per product */}
       {/* ============================================ */}
-      <PromoBlocks sku={product.sku || ""} />
+      <PromoBlocks sku={product.sku || ""} images={allImages} productName={product.name} />
 
       {/* ============================================ */}
       {/* SECTION 3: Full description */}
