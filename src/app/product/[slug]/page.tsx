@@ -15,13 +15,13 @@ import ReviewsCarousel from "@/components/ReviewsCarousel";
 async function getProduct(slug: string) {
   return client.fetch(
     `*[_type == "product" && slug.current == $slug][0] {
-      name, sku, slug, price, oldPrice, badge, inStock, mainImage, gallery,
+      name, sku, slug, price, oldPrice, badge, inStock, mainImage,externalImages, gallery,
       videoUrl, shortDescription, benefits, description, specs,
       "reviews": reviews[!defined(approved) || approved],
       seoTitle, seoDescription,
       "category": category->{ _id, name, slug },
       "relatedProducts": relatedProducts[]->{ 
-        name, slug, price, oldPrice, badge, mainImage,
+        name, slug, price, oldPrice, badge, mainImage,externalImages,
         "category": category->{ name }
       }
     }`,
@@ -42,7 +42,7 @@ async function getAllProducts(categoryRef?: string) {
   if (categoryRef) {
     return client.fetch(
       `*[_type == "product" && category._ref == $catRef] | order(_createdAt desc) [0...12] {
-        name, slug, price, oldPrice, badge, mainImage,
+        name, slug, price, oldPrice, badge, mainImage,externalImages,
         "category": category->{ name }
       }`,
       { catRef: categoryRef }
@@ -50,7 +50,7 @@ async function getAllProducts(categoryRef?: string) {
   }
   return client.fetch(
     `*[_type == "product"] | order(_createdAt desc) [0...12] {
-      name, slug, price, oldPrice, badge, mainImage,
+      name, slug, price, oldPrice, badge, mainImage,externalImages,
       "category": category->{ name }
     }`
   );
@@ -75,7 +75,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   const related = product.relatedProducts?.length > 0 ? product.relatedProducts : await getAllProducts(product.category?._id);
   const customerReviews = await getCustomerReviews(slug);
-  const allImages = [product.mainImage, ...(product.gallery || [])].filter((img) => img && img.asset);
+  const allImages = [product.mainImage,externalImages, ...(product.gallery || [])].filter((img) => img && img.asset);
   const allReviews = [...(product.reviews || []), ...customerReviews];
   const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : null;
   const soldCount = 847 + Math.floor(product.price % 500);

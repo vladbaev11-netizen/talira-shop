@@ -82,6 +82,12 @@ export const product = defineType({
       validation: (Rule) => Rule.max(8),
     }),
     defineField({
+      name: "externalImages",
+      title: "Зовнішні фото (URL)",
+      type: "array",
+      of: [{ type: "string" }],
+    }),
+    defineField({
       name: "videoUrl",
       title: "Відео (YouTube URL)",
       type: "url",

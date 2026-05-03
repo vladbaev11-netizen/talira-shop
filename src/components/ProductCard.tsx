@@ -15,7 +15,8 @@ interface ProductCardProps {
     price: number;
     oldPrice?: number;
     badge?: string;
-    mainImage: any;
+    mainImage?: any;
+    externalImages?: string[];
     category?: { name: string };
   };
 }
@@ -24,13 +25,19 @@ const badgeLabels: Record<string, string> = { hit: "Хіт", new: "Новинк�
 
 export default function ProductCard({ product }: ProductCardProps) {
   const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : null;
-  const imageUrl = product.mainImage ? urlForCard(product.mainImage).width(600).height(600).url() : "";
+  const imageUrl = product.mainImage
+    ? urlForCard(product.mainImage).width(600).height(600).url()
+    : product.externalImages && product.externalImages.length > 0
+      ? product.externalImages[0]
+      : "";
+
+  const hasImage = !!imageUrl;
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <Link href={"/product/" + product.slug.current} style={{ cursor: "pointer", transition: "transform .4s", display: "block" }}>
         <div style={{ aspectRatio: "1", background: "var(--bg-card)", position: "relative", overflow: "hidden", marginBottom: "16px", border: "1px solid var(--line-soft)", borderRadius: "4px" }}>
-          {product.mainImage && (
+          {hasImage && (
             <Image src={imageUrl} alt={product.name} fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 50vw, 25vw" />
           )}
           {product.badge && (

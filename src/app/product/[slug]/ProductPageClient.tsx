@@ -1,78 +1,80 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import imageUrlBuilder from "@sanity/image-url";
 
 const builder = imageUrlBuilder({ projectId: "777maat6", dataset: "production" });
-function urlForClient(source: any) { return builder.image(source); }
+function urlFor(source: any) { return builder.image(source); }
 
-export default function ProductPageClient({ images, productName }: { images: any[]; productName: string }) {
+interface ProductPageClientProps {
+  images: any[];
+  externalImages?: string[];
+  productName: string;
+}
+
+export default function ProductPageClient({ images, externalImages, productName }: ProductPageClientProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const touchStart = useRef<number | null>(null);
-  const touchEnd = useRef<number | null>(null);
-  const cols = Math.min(images.length, 5);
 
-  function prev() { setActiveIndex((i) => (i === 0 ? images.length - 1 : i - 1)); }
-  function next() { setActiveIndex((i) => (i === images.length - 1 ? 0 : i + 1)); }
+  // Build unified image list: Sanity images first, then external URLs
+  const allImages: { type: "sanity" | "external"; src: string; thumb: string }[] = [];
 
-  function onTouchStart(e: React.TouchEvent) { touchStart.current = e.touches[0].clientX; touchEnd.current = null; }
-  function onTouchMove(e: React.TouchEvent) { touchEnd.current = e.touches[0].clientX; }
-  function onTouchEnd() {
-    if (!touchStart.current || !touchEnd.current) return;
-    const diff = touchStart.current - touchEnd.current;
-    if (Math.abs(diff) > 50) { diff > 0 ? next() : prev(); }
-    touchStart.current = null; touchEnd.current = null;
+  // Sanity images
+  for (const img of images) {
+    if (img && img.asset) {
+      allImages.push({
+        type: "sanity",
+        src: urlFor(img).width(800).height(800).url(),
+        thumb: urlFor(img).width(200).height(200).url(),
+      });
+    }
   }
 
-  const arrowStyle: React.CSSProperties = {
-    position: "absolute", top: "50%", transform: "translateY(-50%)",
-    width: "48px", height: "48px", background: "rgba(255,255,255,.9)",
-    border: "1px solid var(--line-soft)", borderRadius: "50%",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    cursor: "pointer", zIndex: 3, color: "var(--ink)", fontSize: "20px",
-  };
+  // External images (if no Sanity images)
+  if (allImages.length === 0 && externalImages) {
+    for (const url of externalImages) {
+      if (url && url.startsWith("http")) {
+        allImages.push({ type: "external", src: url, thumb: url });
+      }
+    }
+  }
+
+  if (allImages.length === 0) {
+    return <div style={{ aspectRatio: "1", background: "var(--bg-card)", border: "1px solid var(--line-soft)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-dim)", fontSize: "14px" }}>{"Фото відсутнє"}</div>;
+  }
 
   return (
     <div>
-      <div
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        style={{
-          aspectRatio: "1", background: "var(--bg-card)", border: "1px solid var(--line-soft)",
-          marginBottom: "14px", position: "relative", overflow: "hidden", borderRadius: "4px",
-        }}
-      >
-        {images[activeIndex] && (
-          <Image
-            src={urlForClient(images[activeIndex]).width(800).height(800).url()}
-            alt={productName} fill style={{ objectFit: "cover" }}
-            sizes="(max-width: 768px) 100vw, 50vw" priority
-          />
-        )}
-        {images.length > 1 && (
-          <>
-            <button onClick={prev} style={{ ...arrowStyle, left: "16px" }}>‹</button>
-            <button onClick={next} style={{ ...arrowStyle, right: "16px" }}>›</button>
-          </>
-        )}
-        <div style={{ position: "absolute", bottom: "16px", right: "16px", background: "rgba(0,0,0,.5)", color: "#fff", padding: "4px 12px", fontSize: "12px", borderRadius: "100px", zIndex: 3 }}>
-          {activeIndex + 1} / {images.length}
-        </div>
+      {/* Main image */}
+      <div style={{ aspectRatio: "1", background: "var(--bg-card)", border: "1px solid var(--line-soft)", marginBottom: "14px", position: "relative", overflow: "hidden" }}>
+        <Image
+          src={allImages[activeIndex].src}
+          alt={productName + " — фото " + (activeIndex + 1)}
+          fill
+          style={{ objectFit: "cover" }}
+          sizes="(max-width: 768px) 100vw, 50vw"
+          priority
+          unoptimized={allImages[activeIndex].type === "external"}
+        />
       </div>
 
-      {images.length > 1 && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(" + cols + ", 1fr)", gap: "8px" }}>
-          {images.map((img: any, i: number) => (
-            <div key={i} onClick={() => setActiveIndex(i)}
-              style={{
-                aspectRatio: "1", background: "var(--bg-card)",
-                border: i === activeIndex ? "2px solid var(--ink)" : "1px solid var(--line-soft)",
-                cursor: "pointer", position: "relative", overflow: "hidden", borderRadius: "4px",
-              }}
+      {/* Thumbnails */}
+      {allImages.length > 1 && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(" + Math.min(allImages.length, 5) + ", 1fr)", gap: "12px" }}>
+          {allImages.map((img, i) => (
+            <div
+              key={i}
+              onClick={() => setActiveIndex(i)}
+              style={{ aspectRatio: "1", background: "var(--bg-card)", border: i === activeIndex ? "2px solid var(--ink)" : "1px solid var(--line-soft)", cursor: "pointer", position: "relative", overflow: "hidden" }}
             >
-              <Image src={urlForClient(img).width(200).height(200).url()} alt={productName + " " + (i + 1)} fill style={{ objectFit: "cover" }} sizes="100px" />
+              <Image
+                src={img.thumb}
+                alt={productName + " — мініатюра " + (i + 1)}
+                fill
+                style={{ objectFit: "cover" }}
+                sizes="100px"
+                unoptimized={img.type === "external"}
+              />
             </div>
           ))}
         </div>
