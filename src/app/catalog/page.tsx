@@ -6,7 +6,7 @@ import CatalogFilters from "@/components/CatalogFilters";
 
 async function getProducts() {
   return client.fetch(`*[_type == "product"] | order(_createdAt desc) {
-    name, slug, price, oldPrice, badge, inStock, mainImage,
+    name, slug, price, oldPrice, badge, inStock, mainImage, externalImages,
     "category": category->{ name, slug },
     "subcategory": subcategory->{ name, slug, "parentCategory": parentCategory->{ slug } }
   }`);

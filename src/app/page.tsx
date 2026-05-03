@@ -8,7 +8,7 @@ import Link from "next/link";
 
 async function getProducts() {
   return client.fetch(`*[_type == "product"] | order(_createdAt desc) [0...12] {
-    name, slug, price, oldPrice, badge, mainImage,externalImages,
+    name, slug, price, oldPrice, badge, mainImage, externalImages,
     "category": category->{ name }
   }`);
 }
