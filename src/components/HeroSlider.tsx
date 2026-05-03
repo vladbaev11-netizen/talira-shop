@@ -19,7 +19,8 @@ interface HeroProduct {
   slug: { current: string };
   price: number;
   oldPrice?: number;
-  mainImage: any;
+  mainImage?: any;
+  externalImages?: string[];
   category?: { name: string };
 }
 
@@ -37,6 +38,12 @@ export default function HeroSlider({ products }: { products: HeroProduct[] }) {
   if (!products.length) return null;
 
   const product = products[active];
+  const imageUrl = product.mainImage && product.mainImage.asset
+    ? urlForSlider(product.mainImage).width(900).height(560).url()
+    : product.externalImages && product.externalImages.length > 0
+      ? product.externalImages[0]
+      : "";
+  const isExternal = !(product.mainImage && product.mainImage.asset);
 
   return (
     <div
@@ -52,14 +59,15 @@ export default function HeroSlider({ products }: { products: HeroProduct[] }) {
       }}
     >
       <Link href={"/product/" + product.slug.current} style={{ display: "block", height: "100%" }}>
-        {product.mainImage && (
+        {imageUrl && (
           <Image
-            src={urlForSlider(product.mainImage).width(900).height(560).url()}
+            src={imageUrl}
             alt={product.name}
             fill
             style={{ objectFit: "cover", transition: "opacity .5s" }}
             sizes="(max-width: 768px) 100vw, 50vw"
             priority
+            unoptimized={isExternal}
           />
         )}
       </Link>
@@ -88,11 +96,11 @@ export default function HeroSlider({ products }: { products: HeroProduct[] }) {
         </h3>
         <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
           <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 500 }}>
-            {product.price.toLocaleString("uk-UA")} ₴
+            {product.price.toLocaleString("uk-UA")} {"₴"}
           </span>
           {product.oldPrice && (
             <span style={{ fontSize: "13px", textDecoration: "line-through", opacity: 0.7 }}>
-              {product.oldPrice.toLocaleString("uk-UA")} ₴
+              {product.oldPrice.toLocaleString("uk-UA")} {"₴"}
             </span>
           )}
         </div>
@@ -125,13 +133,12 @@ export default function HeroSlider({ products }: { products: HeroProduct[] }) {
             onClick={() => setActive((p) => (p === 0 ? products.length - 1 : p - 1))}
             style={{
               position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)",
-              width: "36px", height: "36px", background: "rgba(255,255,255,.85)",
-              border: "none", borderRadius: "50%", cursor: "pointer",
+              width: "36px", height: "36px", background: "rgba(255,255,255,.85)", border: "none", borderRadius: "50%", cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: "16px", color: "var(--ink)", zIndex: 3,
             }}
           >
-            ‹
+            {"‹"}
           </button>
           <button
             onClick={() => setActive((p) => (p === products.length - 1 ? 0 : p + 1))}
@@ -143,7 +150,7 @@ export default function HeroSlider({ products }: { products: HeroProduct[] }) {
               fontSize: "16px", color: "var(--ink)", zIndex: 3,
             }}
           >
-            ›
+            {"›"}
           </button>
         </>
       )}
