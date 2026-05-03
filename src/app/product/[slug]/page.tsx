@@ -75,7 +75,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   const related = product.relatedProducts?.length > 0 ? product.relatedProducts : await getAllProducts(product.category?._id);
   const customerReviews = await getCustomerReviews(slug);
-  const allImages = [product.mainImage,externalImages, ...(product.gallery || [])].filter((img) => img && img.asset);
+  const sanityImages = [product.mainImage, ...(product.gallery || [])].filter((img: any) => img && img.asset);
+  const extImages = product.externalImages || [];
+  const sanityImages = [product.mainImage, ...(product.gallery || [])].filter((img: any) => img && img.asset);
+  const extImages = product.externalImages || [];
+  const mainImageUrl = sanityImages.length > 0 ? urlFor(sanityImages[0]).width(800).height(800).url() : extImages.length > 0 ? extImages[0] : "";
   const allReviews = [...(product.reviews || []), ...customerReviews];
   const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : null;
   const soldCount = 847 + Math.floor(product.price % 500);
@@ -92,7 +96,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             name: product.name,
             description: product.shortDescription || "",
             sku: product.sku || product.slug.current,
-            image: allImages[0] ? urlFor(allImages[0]).width(800).height(800).url() : undefined,
+            image: mainImageUrl || undefined,
             offers: {
               "@type": "Offer",
               price: product.price,
