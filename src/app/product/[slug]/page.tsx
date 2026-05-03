@@ -77,8 +77,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const customerReviews = await getCustomerReviews(slug);
   const sanityImages = [product.mainImage, ...(product.gallery || [])].filter((img: any) => img && img.asset);
   const extImages = product.externalImages || [];
-  const sanityImages = [product.mainImage, ...(product.gallery || [])].filter((img: any) => img && img.asset);
-  const extImages = product.externalImages || [];
   const mainImageUrl = sanityImages.length > 0 ? urlFor(sanityImages[0]).width(800).height(800).url() : extImages.length > 0 ? extImages[0] : "";
   const allReviews = [...(product.reviews || []), ...customerReviews];
   const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : null;
