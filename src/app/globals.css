@@ -411,3 +411,8 @@ img { max-width: 100%; height: auto; }
     gap: 12px !important;
   }
 }
+@media (max-width: 768px) {
+  .grid-checkout {
+    grid-template-columns: 1fr !important;
+  }
+}

@@ -5,64 +5,43 @@ const CHAT_ID = "570526308";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { name, phone, city, product, price, quantity } = body;
+    const data = await request.json();
+    const { name, phone, city, warehouse, payment, comment, items, total } = data;
 
-    if (!name || !phone || !product) {
-      return NextResponse.json(
-        { error: "Заповніть всі обов'язкові поля" },
-        { status: 400 }
-      );
+    if (!name || !phone || !city || !warehouse) {
+      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    const qty = quantity || 1;
-    const total = price ? price * qty : 0;
+    const itemsList = items.map((i: any, idx: number) =>
+      `${idx + 1}. ${i.name} × ${i.quantity} = ${(i.price * i.quantity).toLocaleString("uk-UA")} ₴`
+    ).join("\n");
 
-    const message = [
-      "🛍 *НОВЕ ЗАМОВЛЕННЯ — TALIRA*",
-      "",
-      `👤 *Ім'я:* ${name}`,
-      `📱 *Телефон:* ${phone}`,
-      `🏙 *Місто / НП:* ${city || "Не вказано"}`,
-      "",
-      `📦 *Товар:* ${product}`,
-      `🔢 *Кількість:* ${qty} шт.`,
-      total ? `💰 *Сума:* ${total.toLocaleString("uk-UA")} ₴` : "",
-      "",
-      `💳 *Оплата:* Наложений платіж`,
-      `🌐 *Джерело:* talira.com.ua`,
-      "",
-      `⏰ *Час:* ${new Date().toLocaleString("uk-UA", { timeZone: "Europe/Kyiv" })}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
+    const paymentLabel = payment === "card" ? "💳 На картку" : "📦 Накладений платіж";
 
-    const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    const text = [
+      "🛒 *НОВЕ ЗАМОВЛЕННЯ — TALIRA*",
+      "",
+      "👤 *Ім'я:* " + name,
+      "📱 *Телефон:* " + phone,
+      "🏙 *Місто:* " + city,
+      "📦 *Відділення НП:* " + warehouse,
+      "💰 *Оплата:* " + paymentLabel,
+      comment ? "💬 *Коментар:* " + comment : "",
+      "",
+      "📋 *Товари:*",
+      itemsList,
+      "",
+      "💵 *РАЗОМ: " + total.toLocaleString("uk-UA") + " ₴*",
+    ].filter(Boolean).join("\n");
 
-    const response = await fetch(telegramUrl, {
+    await fetch("https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: CHAT_ID,
-        text: message,
-        parse_mode: "Markdown",
-      }),
+      body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: "Markdown" }),
     });
 
-    if (!response.ok) {
-      console.error("Telegram API error:", await response.text());
-      return NextResponse.json(
-        { error: "Помилка відправки" },
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Order API error:", error);
-    return NextResponse.json(
-      { error: "Серверна помилка" },
-      { status: 500 }
-    );
+  } catch {
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
