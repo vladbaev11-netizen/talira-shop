@@ -6,11 +6,25 @@ import HeroSlider from "@/components/HeroSlider";
 import CategoryCarousel from "@/components/CategoryCarousel";
 import Link from "next/link";
 
-async function getProducts() {
-  return client.fetch(`*[_type == "product"] | order(_createdAt desc) [0...12] {
+async function getHeroProducts() {
+  // Random 5 products with both image and good price
+  const all = await client.fetch(`*[_type == "product" && defined(externalImages) && price > 500 && price < 5000] {
     name, slug, price, oldPrice, badge, mainImage, externalImages,
     "category": category->{ name }
   }`);
+  // Shuffle and take 5
+  const shuffled = all.sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 5);
+}
+
+async function getPopularProducts() {
+  // Random 12 products with images
+  const all = await client.fetch(`*[_type == "product" && defined(externalImages) && price > 200] {
+    name, slug, price, oldPrice, badge, mainImage, externalImages,
+    "category": category->{ name }
+  }`);
+  const shuffled = all.sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 12);
 }
 
 async function getTotalCount() {
@@ -23,10 +37,16 @@ async function getCategories() {
   }`);
 }
 
-export const revalidate = 60;
+// Refresh every 5 minutes for fresh random selection
+export const revalidate = 300;
 
 export default async function HomePage() {
-  const [products, totalCount, categories] = await Promise.all([getProducts(), getTotalCount(), getCategories()]);
+  const [heroProducts, popularProducts, totalCount, categories] = await Promise.all([
+    getHeroProducts(),
+    getPopularProducts(),
+    getTotalCount(),
+    getCategories()
+  ]);
 
   return (
     <>
@@ -60,7 +80,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <HeroSlider products={products.slice(0, 5)} />
+          <HeroSlider products={heroProducts} />
         </div>
       </section>
 
@@ -78,7 +98,7 @@ export default async function HomePage() {
       )}
 
       {/* PRODUCTS */}
-      {products.length > 0 && (
+      {popularProducts.length > 0 && (
         <section style={{ padding: "48px 0 72px" }}>
           <div className="container-pad" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px", paddingBottom: "16px", borderBottom: "1px solid var(--line-soft)" }}>
@@ -86,7 +106,7 @@ export default async function HomePage() {
               <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>{totalCount} {"товарів"}</span>
             </div>
             <div className="grid-4">
-              {products.map((product: any) => (
+              {popularProducts.map((product: any) => (
                 <ProductCard key={product.slug.current} product={product} />
               ))}
             </div>
