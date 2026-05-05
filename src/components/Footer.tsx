@@ -17,28 +17,39 @@ export default function Footer() {
               <SocialIcon href="https://t.me/talira_com_ua"><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4 20-7z" /></svg></SocialIcon>
             </div>
           </div>
+
           <FooterCol title="Каталог">
-            <FooterLink href="/catalog?category=kuhnia">{"Все для кухні"}</FooterLink>
-            <FooterLink href="/catalog?category=elektronika-dlia-domu">{"Електроніка"}</FooterLink>
-            <FooterLink href="/catalog?category=krasa-ta-dohliad">{"Краса та догляд"}</FooterLink>
-            <FooterLink href="/catalog?category=dim-ta-sad">{"Дім та сад"}</FooterLink>
-            <FooterLink href="/catalog?category=zdorovia-ta-masazhery">{"Здоров\u0027я"}</FooterLink>
-            <FooterLink href="/catalog?category=dytiachi-tovary">{"Дитячі товари"}</FooterLink>
-            <FooterLink href="/catalog?category=avto-ta-instrument">{"Авто та інструмент"}</FooterLink>
+            <FooterLink href="/catalog?category=kuhnia">{"Кухня"}</FooterLink>
+            <FooterLink href="/catalog?category=elektronika">{"Електроніка"}</FooterLink>
+            <FooterLink href="/catalog?category=osvitlennya">{"Освітлення"}</FooterLink>
+            <FooterLink href="/catalog?category=krasa">{"Краса та догляд"}</FooterLink>
+            <FooterLink href="/catalog?category=dim">{"Дім та інтер\u0027єр"}</FooterLink>
+            <FooterLink href="/catalog?category=pobutova">{"Побутова техніка"}</FooterLink>
+            <FooterLink href="/catalog?category=zdorovia">{"Здоров\u0027я та спорт"}</FooterLink>
           </FooterCol>
-          <FooterCol title="Допомога">
+
+          <FooterCol title="Ще категорії">
+            <FooterLink href="/catalog?category=dytiachi">{"Дитячі товари"}</FooterLink>
+            <FooterLink href="/catalog?category=turyzm">{"Туризм та подорожі"}</FooterLink>
+            <FooterLink href="/catalog?category=zoo">{"Зоотовари"}</FooterLink>
+            <FooterLink href="/catalog?category=avto">{"Авто"}</FooterLink>
+            <FooterLink href="/catalog?category=instrumenty">{"Інструменти"}</FooterLink>
+            <FooterLink href="/catalog?category=bezpeka">{"Безпека"}</FooterLink>
+            <FooterLink href="/catalog?category=telefony">{"Телефони та аксесуари"}</FooterLink>
+          </FooterCol>
+
+          <FooterCol title="Інформація">
             <FooterLink href="/delivery">{"Доставка та оплата"}</FooterLink>
             <FooterLink href="/reviews">{"Відгуки"}</FooterLink>
             <FooterLink href="/about">{"Про бренд"}</FooterLink>
             <FooterLink href="/contacts">{"Контакти"}</FooterLink>
-          </FooterCol>
-          <FooterCol title="Контакти">
             <FooterLink href="tel:+380635294105">{"+380 63 529 41 05"}</FooterLink>
-            <FooterLink href="https://t.me/talira_com_ua">{"Telegram: @talira_com_ua"}</FooterLink>
-            <FooterLink href="https://www.instagram.com/talira.com.ua">{"Instagram: @talira.com.ua"}</FooterLink>
+            <FooterLink href="https://t.me/talira_com_ua">{"@talira_com_ua"}</FooterLink>
+            <FooterLink href="https://www.instagram.com/talira.com.ua">{"@talira.com.ua"}</FooterLink>
             <FooterLink href="mailto:talira.com.ua@gmail.com">{"talira.com.ua@gmail.com"}</FooterLink>
           </FooterCol>
         </div>
+
         <div style={{ paddingTop: "32px", borderTop: "1px solid rgba(245,241,232,.1)", display: "flex", justifyContent: "space-between", color: "rgba(245,241,232,.4)", fontSize: "11px", letterSpacing: ".15em", textTransform: "uppercase", flexWrap: "wrap", gap: "12px" }}>
           <div>&copy; 2026 TALIRA</div>
           <div>{"Публічна оферта"}</div>
