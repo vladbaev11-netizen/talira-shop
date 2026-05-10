@@ -182,9 +182,9 @@ export default function CatalogFilters({ products, categories, subcategories }: 
       {/* Price filter */}
       <div style={{ marginBottom: "24px", paddingBottom: "24px", borderBottom: "1px solid var(--line-soft)" }}>
         <h3 style={{ fontSize: "12px", letterSpacing: ".2em", textTransform: "uppercase", color: "var(--gold-deep)", marginBottom: "12px", fontWeight: 600 }}>Ціна, ₴</h3>
-        <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-          <input type="number" placeholder={"від " + minPrice} value={priceFrom} onChange={(e) => { setPriceFrom(e.target.value); setCurrentPage(1); }} style={{ flex: 1, padding: "10px 12px", border: "1px solid var(--line)", borderRadius: "6px", fontSize: "13px", fontFamily: "'Inter', sans-serif", outline: "none" }} />
-          <input type="number" placeholder={"до " + maxPrice} value={priceTo} onChange={(e) => { setPriceTo(e.target.value); setCurrentPage(1); }} style={{ flex: 1, padding: "10px 12px", border: "1px solid var(--line)", borderRadius: "6px", fontSize: "13px", fontFamily: "'Inter', sans-serif", outline: "none" }} />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+          <input type="number" placeholder="від" value={priceFrom} onChange={(e) => { setPriceFrom(e.target.value); setCurrentPage(1); }} style={{ width: "100%", padding: "10px 8px", border: "1px solid var(--line)", borderRadius: "6px", fontSize: "13px", fontFamily: "'Inter', sans-serif", outline: "none" }} />
+          <input type="number" placeholder="до" value={priceTo} onChange={(e) => { setPriceTo(e.target.value); setCurrentPage(1); }} style={{ width: "100%", padding: "10px 8px", border: "1px solid var(--line)", borderRadius: "6px", fontSize: "13px", fontFamily: "'Inter', sans-serif", outline: "none" }} />
         </div>
       </div>
 
