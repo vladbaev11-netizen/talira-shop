@@ -54,7 +54,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         e.currentTarget.style.boxShadow = "0 2px 8px rgba(26,22,18,0.08)";
       }}
     >
-      <Link href={"/product/" + product.slug.current} style={{ cursor: "pointer", display: "block", flex: "1", display: "flex", flexDirection: "column" }}>
+      <Link href={"/product/" + product.slug.current} style={{ cursor: "pointer", flex: "1", display: "flex", flexDirection: "column" }}>
         <div style={{ aspectRatio: "1", background: "var(--bg-card)", position: "relative", overflow: "hidden" }}>
           {hasImage && (
             <Image src={imageUrl} alt={product.name} fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 50vw, 25vw" />
