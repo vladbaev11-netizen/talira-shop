@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
@@ -16,6 +16,9 @@
   --gold-soft: #c9a961;
   --line: #d4c8b0;
   --line-soft: #e5dcc6;
+  --orange: #ff6b35;
+  --orange-hover: #ff5722;
+  --green: #4ade80;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -63,7 +66,6 @@ img { max-width: 100%; height: auto; }
   }
 }
 
-/* ВИПРАВЛЕННЯ: зменшений padding для каталогу на мобільному */
 @media (max-width: 640px) {
   .container-pad {
     padding-left: 16px !important;
@@ -154,6 +156,7 @@ img { max-width: 100%; height: auto; }
   }
   .grid-4 {
     grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
   }
   .grid-2,
   .grid-specs,
@@ -184,7 +187,7 @@ img { max-width: 100%; height: auto; }
   }
 }
 
-/* Mobile - ВИПРАВЛЕНО: зменшений gap для товарів */
+/* Mobile */
 @media (max-width: 640px) {
   .grid-4 {
     grid-template-columns: repeat(2, 1fr) !important;
