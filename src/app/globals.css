@@ -417,3 +417,19 @@ img { max-width: 100%; height: auto; }
     letter-spacing: 0.03em !important;
   }
 }
+/* КАТАЛОГ МОБИЛЬНАЯ ВЕРСИЯ - СПЕЦИАЛЬНЫЙ КЛАСС */
+@media (max-width: 640px) {
+  .catalog-container {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  .grid-4 {
+    gap: 6px !important;
+  }
+  
+  .container-pad {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}

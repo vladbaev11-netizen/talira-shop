@@ -6,7 +6,7 @@ import CatalogFilters from "@/components/CatalogFilters";
 
 async function getProducts() {
   return client.fetch(`*[_type == "product"] | order(_createdAt desc) {
-    name, slug, price, oldPrice, badge, inStock, mainImage, externalImages,
+    name, slug, price, oldPrice, badge, inStock, mainImage,externalImages,
     "category": category->{ name, slug },
     "subcategory": subcategory->{ name, slug, "parentCategory": parentCategory->{ slug } }
   }`);
@@ -32,14 +32,14 @@ export default async function CatalogPage() {
   return (
     <>
       <Header />
-      <div className="container-pad" style={{ maxWidth: "1320px", margin: "0 auto", paddingTop: "20px", paddingBottom: "20px", fontSize: "11px", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--text-dim)" }}>
+      <div className="catalog-container" style={{ maxWidth: "1320px", margin: "0 auto", padding: "20px 48px", fontSize: "11px", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--text-dim)" }}>
         <Link href="/" style={{ color: "var(--text)" }}>{"Головна"}</Link>
         <span style={{ margin: "0 12px" }}>/</span>
         <span style={{ color: "var(--ink)" }}>{"Каталог"}</span>
       </div>
 
-      <section style={{ paddingTop: "20px", paddingBottom: "40px", borderBottom: "1px solid var(--line)" }}>
-        <div className="container-pad" style={{ maxWidth: "1320px", margin: "0 auto" }}>
+      <section style={{ padding: "20px 0 40px", borderBottom: "1px solid var(--line)" }}>
+        <div className="catalog-container" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", gap: "40px", flexWrap: "wrap" }}>
             <div>
               <span style={{ color: "var(--gold-deep)", fontSize: "11px", letterSpacing: ".3em", textTransform: "uppercase", fontWeight: 500, display: "block", marginBottom: "12px" }}>{"— Весь каталог —"}</span>
@@ -54,7 +54,7 @@ export default async function CatalogPage() {
         </div>
       </section>
 
-      <section style={{ paddingTop: "40px", paddingBottom: "80px" }}>
+      <section style={{ padding: "40px 0 80px" }}>
         <div className="catalog-container" style={{ maxWidth: "1320px", margin: "0 auto" }}>
           <CatalogFilters
             products={JSON.parse(JSON.stringify(products))}
