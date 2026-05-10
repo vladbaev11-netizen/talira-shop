@@ -196,36 +196,61 @@ export default function ProductCard({ product }: { product: Product }) {
             Немає в наявності
           </div>
         ) : (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              // Тут буде логіка додавання в кошик
-            }}
-            style={{
-              width: "100%",
-              padding: "12px 16px",
-              background: "#ff6b35",
-              color: "#fff",
-              border: "none",
-              borderRadius: "8px",
-              fontSize: "13px",
-              fontWeight: 600,
-              letterSpacing: "0.05em",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              textTransform: "uppercase"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#ff5722";
-              e.currentTarget.style.transform = "translateY(-1px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "#ff6b35";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
-          >
-            В кошик
-          </button>
+          <div style={{ display: "flex", gap: "8px", alignItems: "stretch" }}>
+            {/* Quantity selector */}
+            <select
+              onClick={(e) => e.preventDefault()}
+              onChange={(e) => e.stopPropagation()}
+              style={{
+                padding: "12px 8px",
+                border: "1px solid #d4c8b0",
+                borderRadius: "8px",
+                fontSize: "14px",
+                fontWeight: 500,
+                color: "#1a1612",
+                cursor: "pointer",
+                background: "#fff",
+                fontFamily: "'Inter', sans-serif",
+                minWidth: "60px"
+              }}
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+
+            {/* Add to cart button */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                // Тут буде логіка додавання в кошик
+              }}
+              style={{
+                flex: 1,
+                padding: "12px 16px",
+                background: "#a07d3d",
+                color: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "13px",
+                fontWeight: 600,
+                letterSpacing: "0.05em",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                textTransform: "uppercase"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#7a5d28";
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#a07d3d";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              В кошик
+            </button>
+          </div>
         )}
       </div>
     </Link>
