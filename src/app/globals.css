@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
@@ -60,20 +60,6 @@ img { max-width: 100%; height: auto; }
   .container-pad {
     padding-left: 20px !important;
     padding-right: 20px !important;
-  }
-}
-
-/* МОБИЛЬНАЯ ВЕРСИЯ - уменьшенные отступы для товаров */
-@media (max-width: 640px) {
-  .container-pad {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-  }
-  
-  /* Специальный класс для каталога - еще меньше отступы */
-  .catalog-container {
-    padding-left: 8px !important;
-    padding-right: 8px !important;
   }
 }
 
@@ -190,7 +176,7 @@ img { max-width: 100%; height: auto; }
   }
 }
 
-/* Mobile - УМЕНЬШЕННЫЙ GAP для товаров */
+/* Mobile */
 @media (max-width: 640px) {
   .grid-4 {
     grid-template-columns: repeat(2, 1fr) !important;
@@ -409,27 +395,21 @@ img { max-width: 100%; height: auto; }
   }
 }
 
-/* Мобильные стили для кнопки "Купити" */
+/* МОБИЛЬНАЯ ВЕРСИЯ - ФИНАЛЬНЫЕ ФИКСЫ */
 @media (max-width: 640px) {
-  button {
-    font-size: 11px !important;
-    padding: 10px 12px !important;
-    letter-spacing: 0.03em !important;
+  .container-pad {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
   }
-}
-/* КАТАЛОГ МОБИЛЬНАЯ ВЕРСИЯ - СПЕЦИАЛЬНЫЙ КЛАСС */
-@media (max-width: 640px) {
+  
   .catalog-container {
     padding-left: 8px !important;
     padding-right: 8px !important;
   }
   
-  .grid-4 {
-    gap: 6px !important;
-  }
-  
-  .container-pad {
-    padding-left: 8px !important;
-    padding-right: 8px !important;
+  button {
+    font-size: 11px !important;
+    padding: 10px 12px !important;
+    letter-spacing: 0.03em !important;
   }
 }
