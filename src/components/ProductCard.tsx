@@ -136,7 +136,6 @@ export default function ProductCard({ product }: ProductCardProps) {
           image={imageUrl} 
           style="compact" 
           showQuantity={false}
-          buttonText="Купити"
         />
       </div>
     </div>

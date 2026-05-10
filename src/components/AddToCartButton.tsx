@@ -31,7 +31,7 @@ export default function AddToCartButton({ slug, name, price, oldPrice, image, st
           <button onClick={() => setQty((q) => q + 1)} style={{ width: "32px", height: "36px", background: "transparent", border: "1px solid var(--line)", color: "var(--ink)", fontSize: "16px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "0 4px 4px 0" }}>+</button>
         </div>
         <button onClick={handleAdd} style={{ flex: 1, background: "var(--ink)", color: "var(--bg)", border: "none", padding: "10px 12px", fontSize: "11px", fontWeight: 500, letterSpacing: ".15em", textTransform: "uppercase", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", borderRadius: "4px", fontFamily: "'Inter', sans-serif", justifyContent: "center" }}>
-Додати в кошик
+Купити
         </button>
       </div>
     );
