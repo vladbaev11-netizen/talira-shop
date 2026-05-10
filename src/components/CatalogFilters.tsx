@@ -152,8 +152,8 @@ export default function CatalogFilters({ products, categories, subcategories }: 
             return (
               <div key={cat.slug.current}>
                 <div style={{ display: "flex", alignItems: "center", borderBottom: "1px solid var(--line-soft)", background: isActive ? "var(--paper)" : "transparent" }}>
-                  <button onClick={() => selectCategory(cat.slug.current)} style={{ flex: 1, padding: "10px 12px", background: "none", border: "none", textAlign: "left", cursor: "pointer", fontSize: "14px", fontWeight: isActive ? 600 : 400, color: isActive ? "var(--gold-deep)" : "var(--ink)", fontFamily: "'Inter', sans-serif", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span>{cat.name}</span><span style={{ fontSize: "12px", color: "var(--text-dim)" }}>{categoryCount(cat.slug.current)}</span>
+                  <button onClick={() => selectCategory(cat.slug.current)} style={{ flex: 1, padding: "10px 12px", background: "none", border: "none", textAlign: "left", cursor: "pointer", fontSize: "14px", fontWeight: isActive ? 600 : 400, color: isActive ? "var(--gold-deep)" : "var(--ink)", fontFamily: "'Inter', sans-serif", display: "flex", justifyContent: "space-between", alignItems: "center", wordBreak: "break-word", overflowWrap: "break-word" }}>
+                    <span style={{ flex: 1, minWidth: 0 }}>{cat.name}</span><span style={{ fontSize: "12px", color: "var(--text-dim)", flexShrink: 0, marginLeft: "8px" }}>{categoryCount(cat.slug.current)}</span>
                   </button>
                   {subs.length > 0 && (
                     <button onClick={() => toggleCategory(cat.slug.current)} style={{ padding: "10px 12px", background: "none", border: "none", cursor: "pointer", color: "var(--text-dim)" }}>
@@ -227,7 +227,7 @@ export default function CatalogFilters({ products, categories, subcategories }: 
 
       <div className="catalog-grid">
         {/* Desktop sidebar */}
-        <div className="sidebar-desktop" style={{ position: "sticky", top: "100px", alignSelf: "start", maxHeight: "calc(100vh - 120px)", overflowY: "auto" }}>
+        <div className="sidebar-desktop" style={{ position: "sticky", top: "100px", alignSelf: "start", maxHeight: "calc(100vh - 120px)", overflowY: "auto", overflowX: "hidden" }}>
           {sidebarContent}
         </div>
 
