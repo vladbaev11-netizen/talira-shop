@@ -55,7 +55,7 @@ export default async function CatalogPage() {
       </section>
 
       <section style={{ paddingTop: "40px", paddingBottom: "80px" }}>
-        <div className="container-pad" style={{ maxWidth: "1320px", margin: "0 auto" }}>
+        <div className="catalog-container" style={{ maxWidth: "1320px", margin: "0 auto" }}>
           <CatalogFilters
             products={JSON.parse(JSON.stringify(products))}
             categories={JSON.parse(JSON.stringify(categories))}

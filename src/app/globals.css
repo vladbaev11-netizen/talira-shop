@@ -69,6 +69,12 @@ img { max-width: 100%; height: auto; }
     padding-left: 12px !important;
     padding-right: 12px !important;
   }
+  
+  /* Специальный класс для каталога - еще меньше отступы */
+  .catalog-container {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
 }
 
 /* Grid responsive classes */
@@ -188,7 +194,7 @@ img { max-width: 100%; height: auto; }
 @media (max-width: 640px) {
   .grid-4 {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
+    gap: 6px !important;
   }
   .grid-features {
     grid-template-columns: 1fr !important;
