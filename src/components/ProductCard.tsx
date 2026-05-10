@@ -54,7 +54,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
 
         <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px", fontWeight: 500, lineHeight: "1.2", marginBottom: "10px", color: "var(--ink)" }}>
-          {product.name}
+          {product.name.length > 60 ? product.name.slice(0, 60) + "..." : product.name}
         </h4>
 
         <div style={{ display: "flex", alignItems: "baseline", gap: "10px", fontFamily: "'Cormorant Garamond', serif", marginBottom: "12px" }}>
