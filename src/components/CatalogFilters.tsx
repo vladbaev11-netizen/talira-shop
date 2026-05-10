@@ -227,7 +227,7 @@ export default function CatalogFilters({ products, categories, subcategories }: 
 
       <div className="catalog-grid">
         {/* Desktop sidebar */}
-        <div className="sidebar-desktop" style={{ position: "sticky", top: "100px", alignSelf: "start", maxHeight: "calc(100vh - 120px)", overflowY: "auto", padding: "20px", background: "var(--bg-card)", border: "1px solid var(--line-soft)", borderRadius: "8px" }}>
+        <div className="sidebar-desktop" style={{ position: "sticky", top: "100px", alignSelf: "start", maxHeight: "calc(100vh - 120px)", overflowY: "auto" }}>
           {sidebarContent}
         </div>
 
