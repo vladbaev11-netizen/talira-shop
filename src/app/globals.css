@@ -402,3 +402,12 @@ img { max-width: 100%; height: auto; }
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Мобильные стили для кнопки "Купити" */
+@media (max-width: 640px) {
+  button {
+    font-size: 11px !important;
+    padding: 10px 12px !important;
+    letter-spacing: 0.03em !important;
+  }
+}
