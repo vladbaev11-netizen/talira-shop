@@ -38,6 +38,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       style={{ 
         display: "flex", 
         flexDirection: "column",
+        height: "100%",
         boxShadow: "0 2px 8px rgba(26,22,18,0.08)",
         borderRadius: "8px",
         overflow: "hidden",
@@ -53,7 +54,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         e.currentTarget.style.boxShadow = "0 2px 8px rgba(26,22,18,0.08)";
       }}
     >
-      <Link href={"/product/" + product.slug.current} style={{ cursor: "pointer", display: "block" }}>
+      <Link href={"/product/" + product.slug.current} style={{ cursor: "pointer", display: "block", flex: "1", display: "flex", flexDirection: "column" }}>
         <div style={{ aspectRatio: "1", background: "var(--bg-card)", position: "relative", overflow: "hidden" }}>
           {hasImage && (
             <Image src={imageUrl} alt={product.name} fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 50vw, 25vw" />
@@ -98,19 +99,31 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        <div style={{ padding: "16px" }}>
+        <div style={{ padding: "16px", display: "flex", flexDirection: "column", flex: "1" }}>
           {product.category && (
             <div style={{ fontSize: "10px", letterSpacing: ".22em", textTransform: "uppercase", color: "var(--gold-deep)", marginBottom: "6px" }}>
               {product.category.name}
             </div>
           )}
 
-          <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px", fontWeight: 500, lineHeight: "1.2", marginBottom: "10px", color: "var(--ink)", minHeight: "44px" }}>
+          <h4 style={{ 
+            fontFamily: "'Cormorant Garamond', serif", 
+            fontSize: "18px", 
+            fontWeight: 500, 
+            lineHeight: "1.3", 
+            marginBottom: "10px", 
+            color: "var(--ink)", 
+            height: "47px",
+            overflow: "hidden",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical"
+          }}>
             {product.name.length > 60 ? product.name.slice(0, 60) + "..." : product.name}
           </h4>
 
           {/* ЦЕНА - ЯРЧЕ И БОЛЬШЕ */}
-          <div style={{ display: "flex", alignItems: "baseline", gap: "10px", fontFamily: "'Inter', sans-serif", marginBottom: "12px" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: "10px", fontFamily: "'Inter', sans-serif", marginTop: "auto" }}>
             <span style={{ 
               fontSize: "24px", 
               color: "#1a1612", 
