@@ -15,7 +15,7 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
   const { items, totalPrice, clearCart } = useCart();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [payment, setPayment] = useState<"cod" | "card">("cod");
+  const [payment, setPayment] = useState<"cod" | "online" | "installment">("cod");
   const [comment, setComment] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
 
@@ -107,6 +107,62 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
     setStatus("sending");
 
     try {
+      // Якщо онлайн оплата або розстрочка - створюємо інвойс MonoPay
+      if (payment === "online" || payment === "installment") {
+        const orderNumber = "T-" + Date.now().toString().slice(-6);
+        
+        // Створення інвойсу MonoPay
+        const monoRes = await fetch("/api/monopay/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: totalPrice,
+            orderReference: orderNumber,
+            customerName: name.trim(),
+            customerPhone: phone.trim(),
+            paymentType: payment, // "online" або "installment"
+          }),
+        });
+
+        if (!monoRes.ok) {
+          setStatus("error");
+          return;
+        }
+
+        const { pageUrl } = await monoRes.json();
+
+        // Відправка даних замовлення в Telegram
+        await fetch("/api/order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name.trim(),
+            phone: phone.trim(),
+            city: selectedCity.name,
+            warehouse: selectedWarehouse.name,
+            payment: payment === "installment" ? "Частинами (розстрочка)" : "Онлайн оплата",
+            comment: comment.trim(),
+            items: items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity })),
+            total: totalPrice,
+            orderNumber,
+            status: "Очікує оплати",
+          }),
+        });
+
+        // Facebook Pixel
+        trackEvent("InitiateCheckout", {
+          content_name: items.map(i => i.name).join(", "),
+          value: totalPrice,
+          currency: "UAH",
+          num_items: items.reduce((s, i) => s + i.quantity, 0),
+        });
+
+        // Редирект на MonoPay
+        window.location.href = pageUrl;
+        return;
+      }
+
+      // Звичайний накладений платіж
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -115,7 +171,7 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
           phone: phone.trim(),
           city: selectedCity.name,
           warehouse: selectedWarehouse.name,
-          payment,
+          payment: "Накладений платіж",
           comment: comment.trim(),
           items: items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity })),
           total: totalPrice,
@@ -213,7 +269,8 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
       <div style={{ marginBottom: "32px" }}>
         <h3 style={{ fontSize: "12px", letterSpacing: ".2em", textTransform: "uppercase", color: "var(--gold-deep)", fontWeight: 600, marginBottom: "16px", fontFamily: "'Inter', sans-serif" }}>{"Спосіб оплати"}</h3>
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <label onClick={() => setPayment("cod")} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", border: payment === "cod" ? "2px solid var(--gold-deep)" : "1px solid var(--line)", borderRadius: "8px", cursor: "pointer", background: payment === "cod" ? "rgba(160,125,61,.05)" : "transparent" }}>
+          {/* Накладений платіж */}
+          <label onClick={() => setPayment("cod")} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", border: payment === "cod" ? "2px solid var(--gold-deep)" : "1px solid var(--line)", borderRadius: "8px", cursor: "pointer", background: payment === "cod" ? "rgba(160,125,61,.05)" : "transparent", transition: "all 0.2s" }}>
             <div style={{ width: "20px", height: "20px", borderRadius: "50%", border: "2px solid " + (payment === "cod" ? "var(--gold-deep)" : "var(--line)"), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               {payment === "cod" && <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "var(--gold-deep)" }} />}
             </div>
@@ -222,13 +279,33 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
               <div style={{ fontSize: "12px", color: "var(--text-dim)" }}>{"Оплата при отриманні на пошті"}</div>
             </div>
           </label>
-          <label onClick={() => setPayment("card")} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", border: payment === "card" ? "2px solid var(--gold-deep)" : "1px solid var(--line)", borderRadius: "8px", cursor: "pointer", background: payment === "card" ? "rgba(160,125,61,.05)" : "transparent" }}>
-            <div style={{ width: "20px", height: "20px", borderRadius: "50%", border: "2px solid " + (payment === "card" ? "var(--gold-deep)" : "var(--line)"), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              {payment === "card" && <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "var(--gold-deep)" }} />}
+
+          {/* Онлайн оплата */}
+          <label onClick={() => setPayment("online")} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", border: payment === "online" ? "2px solid var(--gold-deep)" : "1px solid var(--line)", borderRadius: "8px", cursor: "pointer", background: payment === "online" ? "rgba(160,125,61,.05)" : "transparent", transition: "all 0.2s" }}>
+            <div style={{ width: "20px", height: "20px", borderRadius: "50%", border: "2px solid " + (payment === "online" ? "var(--gold-deep)" : "var(--line)"), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              {payment === "online" && <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "var(--gold-deep)" }} />}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", marginBottom: "4px" }}>{"💳 Оплата карткою онлайн"}</div>
+              <div style={{ fontSize: "12px", color: "var(--text-dim)", marginBottom: "6px" }}>{"Visa / Mastercard / Apple Pay / Google Pay"}</div>
+              <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                <span style={{ fontSize: "11px", padding: "2px 8px", background: "#f0f0f0", borderRadius: "4px", color: "#666" }}>🍎 Apple Pay</span>
+                <span style={{ fontSize: "11px", padding: "2px 8px", background: "#f0f0f0", borderRadius: "4px", color: "#666" }}>📱 Google Pay</span>
+              </div>
+            </div>
+          </label>
+
+          {/* Розстрочка (Частинами) */}
+          <label onClick={() => setPayment("installment")} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", border: payment === "installment" ? "2px solid var(--gold-deep)" : "1px solid var(--line)", borderRadius: "8px", cursor: "pointer", background: payment === "installment" ? "rgba(160,125,61,.05)" : "transparent", transition: "all 0.2s" }}>
+            <div style={{ width: "20px", height: "20px", borderRadius: "50%", border: "2px solid " + (payment === "installment" ? "var(--gold-deep)" : "var(--line)"), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              {payment === "installment" && <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "var(--gold-deep)" }} />}
             </div>
             <div>
-              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)" }}>{"💳 Оплата на картку"}</div>
-              <div style={{ fontSize: "12px", color: "var(--text-dim)" }}>{"Переказ перед відправкою"}</div>
+              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", display: "flex", alignItems: "center", gap: "8px" }}>
+                {"🏦 Частинами (розстрочка 0%)"}
+                <span style={{ fontSize: "11px", padding: "3px 8px", background: "#4ade80", color: "#fff", borderRadius: "4px", fontWeight: 700 }}>0%</span>
+              </div>
+              <div style={{ fontSize: "12px", color: "var(--text-dim)" }}>{"Оплата частинами від Monobank — без переплат"}</div>
             </div>
           </label>
         </div>
@@ -240,8 +317,8 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
       </div>
 
       <button onClick={handleSubmit} disabled={status === "sending"}
-        style={{ width: "100%", background: status === "sending" ? "var(--text-dim)" : "var(--gold-deep)", color: "#fff", padding: "20px", fontSize: "14px", fontWeight: 600, letterSpacing: ".18em", textTransform: "uppercase", border: "none", cursor: status === "sending" ? "wait" : "pointer", borderRadius: "6px", fontFamily: "'Inter', sans-serif" }}>
-        {status === "sending" ? "Оформлюємо..." : "Підтвердити замовлення"}
+        style={{ width: "100%", background: status === "sending" ? "var(--text-dim)" : "var(--gold-deep)", color: "#fff", padding: "20px", fontSize: "14px", fontWeight: 600, letterSpacing: ".18em", textTransform: "uppercase", border: "none", cursor: status === "sending" ? "wait" : "pointer", borderRadius: "6px", fontFamily: "'Inter', sans-serif", transition: "all 0.2s" }}>
+        {status === "sending" ? "Оформлюємо..." : payment === "online" || payment === "installment" ? "Перейти до оплати" : "Підтвердити замовлення"}
       </button>
 
       {status === "error" && (
