@@ -15,7 +15,7 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
   const { items, totalPrice, clearCart } = useCart();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [payment, setPayment] = useState<"cod" | "online" | "installment">("cod");
+  const [payment, setPayment] = useState<"cod" | "online">("cod");
   const [comment, setComment] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
 
@@ -107,8 +107,8 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
     setStatus("sending");
 
     try {
-      // Якщо онлайн оплата або розстрочка - створюємо інвойс MonoPay
-      if (payment === "online" || payment === "installment") {
+      // Якщо онлайн оплата - створюємо інвойс MonoPay
+      if (payment === "online") {
         const orderNumber = "T-" + Date.now().toString().slice(-6);
         
         // Створення інвойсу MonoPay
@@ -120,7 +120,6 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
             orderReference: orderNumber,
             customerName: name.trim(),
             customerPhone: phone.trim(),
-            paymentType: payment, // "online" або "installment"
           }),
         });
 
@@ -140,7 +139,7 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
             phone: phone.trim(),
             city: selectedCity.name,
             warehouse: selectedWarehouse.name,
-            payment: payment === "installment" ? "Частинами (розстрочка)" : "Онлайн оплата",
+            payment: "Онлайн оплата",
             comment: comment.trim(),
             items: items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity })),
             total: totalPrice,
@@ -294,20 +293,6 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
               </div>
             </div>
           </label>
-
-          {/* Розстрочка (Частинами) */}
-          <label onClick={() => setPayment("installment")} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", border: payment === "installment" ? "2px solid var(--gold-deep)" : "1px solid var(--line)", borderRadius: "8px", cursor: "pointer", background: payment === "installment" ? "rgba(160,125,61,.05)" : "transparent", transition: "all 0.2s" }}>
-            <div style={{ width: "20px", height: "20px", borderRadius: "50%", border: "2px solid " + (payment === "installment" ? "var(--gold-deep)" : "var(--line)"), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              {payment === "installment" && <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "var(--gold-deep)" }} />}
-            </div>
-            <div>
-              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", display: "flex", alignItems: "center", gap: "8px" }}>
-                {"🏦 Частинами (розстрочка 0%)"}
-                <span style={{ fontSize: "11px", padding: "3px 8px", background: "#4ade80", color: "#fff", borderRadius: "4px", fontWeight: 700 }}>0%</span>
-              </div>
-              <div style={{ fontSize: "12px", color: "var(--text-dim)" }}>{"Оплата частинами від Monobank — без переплат"}</div>
-            </div>
-          </label>
         </div>
       </div>
 
@@ -318,7 +303,7 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
 
       <button onClick={handleSubmit} disabled={status === "sending"}
         style={{ width: "100%", background: status === "sending" ? "var(--text-dim)" : "var(--gold-deep)", color: "#fff", padding: "20px", fontSize: "14px", fontWeight: 600, letterSpacing: ".18em", textTransform: "uppercase", border: "none", cursor: status === "sending" ? "wait" : "pointer", borderRadius: "6px", fontFamily: "'Inter', sans-serif", transition: "all 0.2s" }}>
-        {status === "sending" ? "Оформлюємо..." : payment === "online" || payment === "installment" ? "Перейти до оплати" : "Підтвердити замовлення"}
+        {status === "sending" ? "Оформлюємо..." : payment === "online" ? "Перейти до оплати" : "Підтвердити замовлення"}
       </button>
 
       {status === "error" && (
