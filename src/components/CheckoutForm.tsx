@@ -139,12 +139,12 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
             phone: phone.trim(),
             city: selectedCity.name,
             warehouse: selectedWarehouse.name,
-            payment: "Онлайн оплата",
+            payment: "💳 Онлайн оплата (очікує підтвердження)",
             comment: comment.trim(),
             items: items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity })),
             total: totalPrice,
             orderNumber,
-            status: "Очікує оплати",
+            status: "⏳ ОЧІКУЄ ОПЛАТИ",
           }),
         });
 

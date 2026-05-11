@@ -21,16 +21,18 @@ export async function POST(req: NextRequest) {
     if (status === "success") {
       console.log(`✅ Payment successful: Order ${reference}, Amount: ${amount / 100} грн`);
 
-      // Відправка в Telegram
+      // Відправка в Telegram про УСПІШНУ оплату
       const telegramMessage = `
-🎉 <b>ЗАМОВЛЕННЯ ОПЛАЧЕНО ОНЛАЙН!</b>
+🎉 <b>ЗАМОВЛЕННЯ ОПЛАЧЕНО!</b>
 
 📦 Номер: <b>${reference}</b>
-💳 Сума: <b>${(amount / 100).toFixed(2)} ₴</b>
-✅ Статус: ОПЛАЧЕНО
-🔗 Invoice ID: ${invoiceId}
+💰 Сума: <b>${(amount / 100).toFixed(2)} ₴</b>
+✅ Статус: <b>ОПЛАЧЕНО ОНЛАЙН</b>
+💳 Спосіб: Visa/Mastercard/Apple Pay/Google Pay
+🔗 Invoice ID: <code>${invoiceId}</code>
 
-Клієнт оплатив онлайн через MonoPay.
+⚡️ Клієнт успішно оплатив замовлення через MonoPay.
+📦 Можна відправляти товар!
       `.trim();
 
       await fetch(
@@ -48,6 +50,34 @@ export async function POST(req: NextRequest) {
 
       // Тут можна оновити статус замовлення в базі даних
       // await updateOrderStatus(reference, "paid");
+    } else if (status === "failure") {
+      console.log(`❌ Payment failed: Order ${reference}`);
+
+      // Відправка в Telegram про НЕВДАЛУ оплату
+      const telegramMessage = `
+⚠️ <b>ОПЛАТА НЕ ПРОЙШЛА</b>
+
+📦 Номер: <b>${reference}</b>
+💰 Сума: <b>${(amount / 100).toFixed(2)} ₴</b>
+❌ Статус: <b>ПОМИЛКА ОПЛАТИ</b>
+🔗 Invoice ID: <code>${invoiceId}</code>
+
+⚠️ Клієнт намагався оплатити, але платіж не пройшов.
+📞 Можливо, варто зв'язатися з клієнтом.
+      `.trim();
+
+      await fetch(
+        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: process.env.TELEGRAM_CHAT_ID,
+            text: telegramMessage,
+            parse_mode: "HTML",
+          }),
+        }
+      );
     }
 
     return NextResponse.json({ status: "ok" });
