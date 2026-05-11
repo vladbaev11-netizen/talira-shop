@@ -6,7 +6,7 @@ const CHAT_ID = "570526308";
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const { name, phone, city, warehouse, payment, comment, items, total } = data;
+    const { name, phone, city, warehouse, payment, comment, items, total, orderNumber, status } = data;
 
     if (!name || !phone || !city || !warehouse) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
@@ -16,28 +16,36 @@ export async function POST(request: NextRequest) {
       `${idx + 1}. ${i.name} × ${i.quantity} = ${(i.price * i.quantity).toLocaleString("uk-UA")} ₴`
     ).join("\n");
 
-    const paymentLabel = payment === "card" ? "💳 На картку" : "📦 Накладений платіж";
+    // Визначаємо текст оплати
+    let paymentLabel = "📦 Накладений платіж";
+    if (payment === "card") {
+      paymentLabel = "💳 На картку";
+    } else if (payment && payment.includes("Онлайн")) {
+      paymentLabel = payment; // "💳 Онлайн оплата (очікує підтвердження)"
+    }
 
     const text = [
-      "🛒 *НОВЕ ЗАМОВЛЕННЯ — TALIRA*",
+      "🛒 <b>НОВЕ ЗАМОВЛЕННЯ — TALIRA</b>",
       "",
-      "👤 *Ім'я:* " + name,
-      "📱 *Телефон:* " + phone,
-      "🏙 *Місто:* " + city,
-      "📦 *Відділення НП:* " + warehouse,
-      "💰 *Оплата:* " + paymentLabel,
-      comment ? "💬 *Коментар:* " + comment : "",
+      orderNumber ? `📦 <b>Номер:</b> ${orderNumber}` : "",
+      "👤 <b>Ім'я:</b> " + name,
+      "📱 <b>Телефон:</b> " + phone,
+      "🏙 <b>Місто:</b> " + city,
+      "📦 <b>Відділення НП:</b> " + warehouse,
+      "💰 <b>Оплата:</b> " + paymentLabel,
+      status ? `⏳ <b>Статус:</b> ${status}` : "",
+      comment ? "💬 <b>Коментар:</b> " + comment : "",
       "",
-      "📋 *Товари:*",
+      "📋 <b>Товари:</b>",
       itemsList,
       "",
-      "💵 *РАЗОМ: " + total.toLocaleString("uk-UA") + " ₴*",
+      "💵 <b>РАЗОМ: " + total.toLocaleString("uk-UA") + " ₴</b>",
     ].filter(Boolean).join("\n");
 
     await fetch("https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: "Markdown" }),
+      body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: "HTML" }),
     });
 
     return NextResponse.json({ success: true });
