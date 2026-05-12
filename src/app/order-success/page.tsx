@@ -9,6 +9,14 @@ import Footer from "@/components/Footer";
 function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("order");
+  const status = searchParams.get("status");
+
+  // Если статус не success - редирект на страницу ошибки
+  useEffect(() => {
+    if (status && status !== "success") {
+      window.location.href = `/order-failed?order=${orderNumber}&status=${status}`;
+    }
+  }, [status, orderNumber]);
 
   useEffect(() => {
     // Очистка кошика після успішного замовлення
