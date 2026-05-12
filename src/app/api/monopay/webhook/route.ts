@@ -1,14 +1,74 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
+// Кешируем публичный ключ чтобы не запрашивать каждый раз
+let cachedPublicKey: string | null = null;
+
+async function getPublicKey(): Promise<string> {
+  if (cachedPublicKey) {
+    return cachedPublicKey;
+  }
+
+  try {
+    const response = await fetch("https://api.monobank.ua/api/merchant/pubkey", {
+      headers: {
+        "X-Token": process.env.MONOPAY_TOKEN!,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch public key");
+    }
+
+    const data = await response.json();
+    cachedPublicKey = data.key;
+    return data.key;
+  } catch (error) {
+    console.error("Error fetching MonoPay public key:", error);
+    throw error;
+  }
+}
+
+function verifySignature(publicKey: string, xSign: string, body: string): boolean {
+  try {
+    const verify = crypto.createVerify("SHA256");
+    verify.update(body);
+    verify.end();
+    
+    // Публичный ключ должен быть в формате PEM
+    const pemKey = `-----BEGIN PUBLIC KEY-----\n${publicKey}\n-----END PUBLIC KEY-----`;
+    
+    return verify.verify(pemKey, xSign, "base64");
+  } catch (error) {
+    console.error("Signature verification error:", error);
+    return false;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    
-    // Верифікація підпису від MonoPay (опціонально, але рекомендовано)
     const xSign = req.headers.get("X-Sign");
+    const bodyText = await req.text();
+    const body = JSON.parse(bodyText);
+    
+    // Верифікація підпису
     if (xSign) {
-      // Тут можна додати перевірку підпису якщо MonoPay надає публічний ключ
+      try {
+        const publicKey = await getPublicKey();
+        const isValid = verifySignature(publicKey, xSign, bodyText);
+        
+        if (!isValid) {
+          console.error("Invalid signature from MonoPay");
+          return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
+        }
+        
+        console.log("✅ Signature verified successfully");
+      } catch (error) {
+        console.error("Error verifying signature:", error);
+        // Продовжуємо обробку навіть якщо верифікація не вдалася (на початку)
+      }
+    } else {
+      console.warn("⚠️ No X-Sign header received from MonoPay");
     }
 
     const { invoiceId, status, amount, reference } = body;
