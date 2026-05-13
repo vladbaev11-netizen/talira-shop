@@ -21,16 +21,16 @@ function OrderSuccessContent() {
   useEffect(() => {
     // Очистка кошика після успішного замовлення
     if (typeof window !== "undefined" && status === "success") {
-      // Очищаем localStorage
-      localStorage.removeItem("cart");
+      // Очищаем localStorage с ПРАВИЛЬНЫМ ключом
+      localStorage.removeItem("talira-cart");
       
-      // Триггерим событие для обновления CartContext
-      window.dispatchEvent(new Event("storage"));
+      // Триггерим кастомное событие для обновления CartContext
+      window.dispatchEvent(new Event("cartCleared"));
       
       // Дополнительная проверка через 100ms
       setTimeout(() => {
-        localStorage.removeItem("cart");
-        window.dispatchEvent(new Event("storage"));
+        localStorage.removeItem("talira-cart");
+        window.dispatchEvent(new Event("cartCleared"));
       }, 100);
       
       console.log("Cart cleared after successful payment");

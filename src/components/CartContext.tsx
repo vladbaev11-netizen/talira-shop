@@ -43,6 +43,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (saved) setItems(JSON.parse(saved));
     } catch {}
     setLoaded(true);
+
+    // Слушаем событие storage для синхронизации между вкладками и после очистки
+    const handleStorageChange = () => {
+      try {
+        const saved = localStorage.getItem("talira-cart");
+        if (saved) {
+          setItems(JSON.parse(saved));
+        } else {
+          setItems([]);
+        }
+      } catch {}
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    
+    // Также слушаем кастомное событие для обновления в той же вкладке
+    window.addEventListener("cartCleared", handleStorageChange);
+    
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("cartCleared", handleStorageChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -67,7 +89,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.map((i) => (i.slug === slug ? { ...i, quantity: qty } : i)));
   }
 
-  function clearCart() { setItems([]); }
+  function clearCart() { 
+    setItems([]); 
+    localStorage.removeItem("talira-cart");
+  }
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const totalPrice = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
