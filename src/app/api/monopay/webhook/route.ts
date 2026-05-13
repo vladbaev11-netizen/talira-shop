@@ -35,8 +35,10 @@ function verifySignature(publicKey: string, xSign: string, body: string): boolea
     verify.update(body);
     verify.end();
     
-    // Публичный ключ должен быть в формате PEM
-    const pemKey = `-----BEGIN PUBLIC KEY-----\n${publicKey}\n-----END PUBLIC KEY-----`;
+    // Публичный ключ уже в base64, декодируем и используем как PEM
+    // Убираем переносы строк и пробелы
+    const cleanKey = publicKey.replace(/\s/g, '');
+    const pemKey = `-----BEGIN PUBLIC KEY-----\n${cleanKey}\n-----END PUBLIC KEY-----`;
     
     return verify.verify(pemKey, xSign, "base64");
   } catch (error) {
@@ -81,19 +83,32 @@ export async function POST(req: NextRequest) {
 
     const { invoiceId, status, amount, reference } = body;
 
+    console.log("Processing status:", status);
+
+    // Игнорируем статус "created" - это просто уведомление о создании инвойса
+    if (status === "created" || status === "processing") {
+      console.log(`ℹ️ Invoice ${invoiceId} status: ${status} - ignoring`);
+      return NextResponse.json({ status: "ok" });
+    }
+
     // Статуси MonoPay:
     // success - оплачено
     // failure - помилка
-    // processing - в обробці
+    // created - створено (ігноруємо)
+    // processing - в обробці (ігноруємо)
 
     if (status === "success") {
-      console.log(`✅ Payment successful: Order ${reference}, Amount: ${amount / 100} грн`);
+      // Извлекаем номер заказа из reference или destination
+      const orderNumber = reference || body.merchantPaymInfo?.reference || 
+                         (body.destination?.match(/T-\d+/) || [])[0] || "Unknown";
+      
+      console.log(`✅ Payment successful: Order ${orderNumber}, Amount: ${amount / 100} грн`);
 
       // Відправка в Telegram про УСПІШНУ оплату
       const telegramMessage = `
 🎉 <b>ЗАМОВЛЕННЯ ОПЛАЧЕНО!</b>
 
-📦 Номер: <b>${reference}</b>
+📦 Номер: <b>${orderNumber}</b>
 💰 Сума: <b>${(amount / 100).toFixed(2)} ₴</b>
 ✅ Статус: <b>ОПЛАЧЕНО ОНЛАЙН</b>
 💳 Спосіб: Visa/Mastercard/Apple Pay/Google Pay
@@ -119,13 +134,17 @@ export async function POST(req: NextRequest) {
       // Тут можна оновити статус замовлення в базі даних
       // await updateOrderStatus(reference, "paid");
     } else if (status === "failure") {
-      console.log(`❌ Payment failed: Order ${reference}`);
+      // Извлекаем номер заказа
+      const orderNumber = reference || body.merchantPaymInfo?.reference || 
+                         (body.destination?.match(/T-\d+/) || [])[0] || "Unknown";
+      
+      console.log(`❌ Payment failed: Order ${orderNumber}`);
 
       // Відправка в Telegram про НЕВДАЛУ оплату
       const telegramMessage = `
 ⚠️ <b>ОПЛАТА НЕ ПРОЙШЛА</b>
 
-📦 Номер: <b>${reference}</b>
+📦 Номер: <b>${orderNumber}</b>
 💰 Сума: <b>${(amount / 100).toFixed(2)} ₴</b>
 ❌ Статус: <b>ПОМИЛКА ОПЛАТИ</b>
 🔗 Invoice ID: <code>${invoiceId}</code>
