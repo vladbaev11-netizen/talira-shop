@@ -20,10 +20,22 @@ function OrderSuccessContent() {
 
   useEffect(() => {
     // Очистка кошика після успішного замовлення
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && status === "success") {
+      // Очищаем localStorage
       localStorage.removeItem("cart");
+      
+      // Триггерим событие для обновления CartContext
+      window.dispatchEvent(new Event("storage"));
+      
+      // Дополнительная проверка через 100ms
+      setTimeout(() => {
+        localStorage.removeItem("cart");
+        window.dispatchEvent(new Event("storage"));
+      }, 100);
+      
+      console.log("Cart cleared after successful payment");
     }
-  }, []);
+  }, [status]);
 
   return (
     <section style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
