@@ -28,7 +28,9 @@ export async function POST(req: NextRequest) {
           destination: `Замовлення ${orderReference}`,
           comment: `Клієнт: ${customerName}, ${customerPhone}`,
         },
-        redirectUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/order-success?order=${orderReference}&status=success`,
+        redirectUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/order-success?order=${orderReference}`,
+        successUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/order-success?order=${orderReference}&status=success`,
+        failUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/order-failed?order=${orderReference}&status=failure`,
         webHookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/monopay/webhook`,
         validity: 3600, // Інвойс дійсний 1 годину
         saveCardData: {
