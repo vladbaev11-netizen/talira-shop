@@ -118,18 +118,31 @@ export async function POST(req: NextRequest) {
 📦 Можна відправляти товар!
       `.trim();
 
-      await fetch(
-        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: process.env.TELEGRAM_CHAT_ID,
-            text: telegramMessage,
-            parse_mode: "HTML",
-          }),
+      console.log("Sending Telegram message for successful payment...");
+      
+      try {
+        const telegramResponse = await fetch(
+          `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: process.env.TELEGRAM_CHAT_ID,
+              text: telegramMessage,
+              parse_mode: "HTML",
+            }),
+          }
+        );
+        
+        if (!telegramResponse.ok) {
+          const errorText = await telegramResponse.text();
+          console.error("Telegram API error:", errorText);
+        } else {
+          console.log("✅ Telegram message sent successfully");
         }
-      );
+      } catch (error) {
+        console.error("Failed to send Telegram message:", error);
+      }
 
       // Тут можна оновити статус замовлення в базі даних
       // await updateOrderStatus(reference, "paid");
@@ -153,18 +166,31 @@ export async function POST(req: NextRequest) {
 📞 Можливо, варто зв'язатися з клієнтом.
       `.trim();
 
-      await fetch(
-        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: process.env.TELEGRAM_CHAT_ID,
-            text: telegramMessage,
-            parse_mode: "HTML",
-          }),
+      console.log("Sending Telegram message for failed payment...");
+      
+      try {
+        const telegramResponse = await fetch(
+          `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: process.env.TELEGRAM_CHAT_ID,
+              text: telegramMessage,
+              parse_mode: "HTML",
+            }),
+          }
+        );
+        
+        if (!telegramResponse.ok) {
+          const errorText = await telegramResponse.text();
+          console.error("Telegram API error:", errorText);
+        } else {
+          console.log("✅ Telegram message sent successfully");
         }
-      );
+      } catch (error) {
+        console.error("Failed to send Telegram message:", error);
+      }
     }
 
     return NextResponse.json({ status: "ok" });
