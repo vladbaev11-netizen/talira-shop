@@ -253,25 +253,25 @@ export default function HeroSlider() {
 
         .hero-cta {
           display: inline-block;
-          padding: 20px 50px;
+          padding: 18px 45px;
           font-family: var(--font-sans);
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 700;
           letter-spacing: 0.05em;
           text-transform: uppercase;
           border-radius: 8px;
           text-decoration: none;
           transition: all 0.3s ease;
-          background: #1a1612;
+          background: #a07d3d;
           color: #ffffff;
           border: none;
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 4px 15px rgba(160, 125, 61, 0.6);
         }
 
         .hero-cta:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-          background: #000000;
+          box-shadow: 0 6px 25px rgba(160, 125, 61, 0.8);
+          background: #8a6a2f;
         }
 
         .hero-cta:active {
