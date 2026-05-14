@@ -1,0 +1,36 @@
+<svg width="1920" height="800" viewBox="0 0 1920 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a07d3d;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#c9a052;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8a6a2f;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="1920" height="800" fill="url(#grad3)"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="1600" cy="180" r="220" fill="#f5f1e8" opacity="0.08"/>
+  <circle cx="250" cy="620" r="160" fill="#1a1612" opacity="0.06"/>
+  
+  <!-- Delivery truck icon -->
+  <g transform="translate(1350, 300)">
+    <rect x="20" y="40" width="120" height="80" rx="8" fill="#f5f1e8" opacity="0.3"/>
+    <rect x="140" y="60" width="60" height="60" rx="8" fill="#f5f1e8" opacity="0.25"/>
+    <circle cx="60" cy="130" r="18" fill="#f5f1e8" opacity="0.4"/>
+    <circle cx="160" cy="130" r="18" fill="#f5f1e8" opacity="0.4"/>
+    <path d="M 60 30 L 90 30 L 90 10 L 60 10 Z" fill="#f5f1e8" opacity="0.2"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="330" font-family="serif" font-size="76" font-weight="600" fill="#f5f1e8">
+    Доставка 1-3 дні
+  </text>
+  <text x="200" y="410" font-family="sans-serif" font-size="30" fill="#f5f1e8" opacity="0.95">
+    Новою Поштою по всій Україні
+  </text>
+  <text x="200" y="460" font-family="sans-serif" font-size="26" fill="#f5f1e8" opacity="0.85">
+    • Оплата при отриманні • Перевірка товару
+  </text>
+</svg>

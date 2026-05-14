@@ -9,28 +9,28 @@ interface Slide {
   subtitle: string;
   ctaText: string;
   ctaLink: string;
-  gradient: string;
+  imagePath: string;
   textColor: string;
 }
 
 const slides: Slide[] = [
   {
     id: 1,
-    title: "LED туалетні столики",
-    subtitle: "З RGB підсвіткою та HD дзеркалами — створи свій ідеальний простір",
+    title: "LED меблі з підсвіткою",
+    subtitle: "Створіть ідеальний простір для краси",
     ctaText: "Переглянути",
     ctaLink: "/catalog?category=krasa",
-    gradient: "linear-gradient(135deg, #1a1612 0%, #3d3530 50%, #1a1612 100%)",
+    imagePath: "/images/hero/hero-banner-1.svg",
     textColor: "white"
   },
   {
     id: 2,
-    title: "Масажери для дому",
-    subtitle: "Професійний догляд у комфорті власної оселі",
-    ctaText: "Дивитись",
-    ctaLink: "/catalog?category=zdorovia",
-    gradient: "linear-gradient(135deg, #a07d3d 0%, #c9a052 50%, #8a6a2f 100%)",
-    textColor: "white"
+    title: "4500+ товарів для дому",
+    subtitle: "Меблі • Електроніка • Краса • Здоров'я",
+    ctaText: "Весь каталог",
+    ctaLink: "/catalog",
+    imagePath: "/images/hero/hero-banner-2.svg",
+    textColor: "#1a1612"
   },
   {
     id: 3,
@@ -38,17 +38,17 @@ const slides: Slide[] = [
     subtitle: "Новою Поштою по всій Україні • Оплата при отриманні",
     ctaText: "Оформити замовлення",
     ctaLink: "/catalog",
-    gradient: "linear-gradient(135deg, #8a6a2f 0%, #a07d3d 100%)",
+    imagePath: "/images/hero/hero-banner-3.svg",
     textColor: "white"
   },
   {
     id: 4,
-    title: "4500+ товарів для дому",
-    subtitle: "Меблі, електроніка, краса — все для комфортного життя",
-    ctaText: "Весь каталог",
-    ctaLink: "/catalog",
-    gradient: "linear-gradient(135deg, #f5f1e8 0%, #e8dcc8 50%, #f5f1e8 100%)",
-    textColor: "#1a1612"
+    title: "Приєднуйтесь в Telegram",
+    subtitle: "Акції • Новинки • Підтримка 24/7",
+    ctaText: "Підписатись",
+    ctaLink: "https://t.me/talira_com_ua",
+    imagePath: "/images/hero/hero-banner-4.svg",
+    textColor: "white"
   }
 ];
 
@@ -93,22 +93,20 @@ export default function HeroSlider() {
             key={slide.id}
             className={`hero-slide ${isActive ? 'active' : ''}`}
             style={{
-              background: slide.gradient
+              backgroundImage: `url(${slide.imagePath})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
             }}
           >
             <div className="hero-content">
               <div className="hero-text">
-                <h1 className="hero-title" style={{ color: slide.textColor }}>
-                  {slide.title}
-                </h1>
-                
-                <p className="hero-subtitle" style={{ color: slide.textColor }}>
-                  {slide.subtitle}
-                </p>
-
+                {/* Текст скрыт, так как он уже в баннере */}
+                {/* Но оставляем CTA кнопку */}
                 <Link 
                   href={slide.ctaLink}
                   className="hero-cta"
+                  target={slide.ctaLink.startsWith('http') ? '_blank' : undefined}
+                  rel={slide.ctaLink.startsWith('http') ? 'noopener noreferrer' : undefined}
                 >
                   {slide.ctaText}
                 </Link>
@@ -169,8 +167,9 @@ export default function HeroSlider() {
           visibility: hidden;
           transition: opacity 0.8s ease, visibility 0.8s ease;
           display: flex;
-          align-items: center;
-          justify-content: center;
+          align-items: flex-end;
+          justify-content: flex-start;
+          padding: 60px;
         }
 
         .hero-slide.active {
@@ -180,71 +179,51 @@ export default function HeroSlider() {
         }
 
         .hero-content {
-          max-width: 1200px;
-          width: 100%;
-          padding: 0 48px;
           position: relative;
           z-index: 2;
         }
 
         .hero-text {
-          max-width: 700px;
           animation: fadeInUp 0.8s ease-out;
-        }
-
-        .hero-title {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(40px, 6vw, 72px);
-          font-weight: 600;
-          line-height: 1.1;
-          margin-bottom: 24px;
-        }
-
-        .hero-subtitle {
-          font-family: var(--font-sans);
-          font-size: clamp(16px, 2vw, 22px);
-          line-height: 1.6;
-          margin-bottom: 40px;
-          opacity: 0.95;
         }
 
         .hero-cta {
           display: inline-block;
-          padding: 16px 40px;
+          padding: 18px 48px;
           font-family: var(--font-sans);
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 600;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          border-radius: 6px;
+          border-radius: 8px;
           text-decoration: none;
           transition: all 0.3s ease;
           background: #a07d3d;
           color: white;
           border: 2px solid #a07d3d;
-          box-shadow: 0 4px 20px rgba(160, 125, 61, 0.4);
+          box-shadow: 0 6px 25px rgba(160, 125, 61, 0.5);
         }
 
         .hero-cta:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 30px rgba(160, 125, 61, 0.6);
+          transform: translateY(-3px);
+          box-shadow: 0 8px 35px rgba(160, 125, 61, 0.6);
           background: #8a6a2f;
           border-color: #8a6a2f;
         }
 
         .hero-cta:active {
-          transform: translateY(0);
+          transform: translateY(-1px);
         }
 
         .hero-arrow {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          background: rgba(26, 22, 18, 0.6);
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          width: 52px;
-          height: 52px;
+          background: rgba(26, 22, 18, 0.7);
+          backdrop-filter: blur(10px);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          width: 56px;
+          height: 56px;
           border-radius: 50%;
           cursor: pointer;
           display: flex;
@@ -261,32 +240,32 @@ export default function HeroSlider() {
         }
 
         .hero-arrow:hover {
-          background: rgba(26, 22, 18, 0.8);
-          border-color: rgba(255, 255, 255, 0.4);
-          transform: translateY(-50%) scale(1.05);
+          background: rgba(26, 22, 18, 0.9);
+          border-color: rgba(255, 255, 255, 0.5);
+          transform: translateY(-50%) scale(1.08);
         }
 
         .hero-arrow-left {
-          left: 32px;
+          left: 40px;
         }
 
         .hero-arrow-right {
-          right: 32px;
+          right: 40px;
         }
 
         .hero-dots {
           position: absolute;
-          bottom: 40px;
+          bottom: 50px;
           left: 50%;
           transform: translateX(-50%);
           display: flex;
-          gap: 12px;
+          gap: 14px;
           z-index: 10;
         }
 
         .hero-dot {
-          width: 10px;
-          height: 10px;
+          width: 12px;
+          height: 12px;
           border-radius: 50%;
           background: rgba(255, 255, 255, 0.5);
           border: none;
@@ -296,19 +275,19 @@ export default function HeroSlider() {
         }
 
         .hero-dot:hover {
-          background: rgba(255, 255, 255, 0.7);
+          background: rgba(255, 255, 255, 0.75);
         }
 
         .hero-dot.active {
           background: white;
-          width: 32px;
-          border-radius: 5px;
+          width: 36px;
+          border-radius: 6px;
         }
 
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
@@ -321,40 +300,32 @@ export default function HeroSlider() {
             height: 500px;
           }
 
-          .hero-content {
-            padding: 0 24px;
-          }
-
-          .hero-title {
-            font-size: 36px;
-          }
-
-          .hero-subtitle {
-            font-size: 16px;
-            margin-bottom: 32px;
+          .hero-slide {
+            padding: 40px 24px;
           }
 
           .hero-cta {
             width: 100%;
             text-align: center;
-            padding: 14px 32px;
+            padding: 16px 32px;
+            font-size: 14px;
           }
 
           .hero-arrow {
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
           }
 
           .hero-arrow-left {
-            left: 16px;
+            left: 20px;
           }
 
           .hero-arrow-right {
-            right: 16px;
+            right: 20px;
           }
 
           .hero-dots {
-            bottom: 24px;
+            bottom: 30px;
           }
         }
       `}</style>
