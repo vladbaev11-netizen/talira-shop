@@ -21,7 +21,7 @@ const slides: Slide[] = [
     ctaText: "Переглянути",
     ctaLink: "/catalog?category=krasa",
     imageUrl: "https://images.pexels.com/photos/1090638/pexels-photo-1090638.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
-    overlay: "linear-gradient(135deg, rgba(26, 22, 18, 0.6) 0%, rgba(26, 22, 18, 0.3) 100%)"
+    overlay: "linear-gradient(135deg, rgba(26, 22, 18, 0.4) 0%, rgba(26, 22, 18, 0.2) 100%)"
   },
   {
     id: 2,
@@ -30,7 +30,7 @@ const slides: Slide[] = [
     ctaText: "Весь каталог",
     ctaLink: "/catalog",
     imageUrl: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
-    overlay: "linear-gradient(135deg, rgba(245, 241, 232, 0.85) 0%, rgba(232, 220, 200, 0.75) 100%)"
+    overlay: "linear-gradient(135deg, rgba(245, 241, 232, 0.7) 0%, rgba(232, 220, 200, 0.5) 100%)"
   },
   {
     id: 3,
@@ -39,7 +39,7 @@ const slides: Slide[] = [
     ctaText: "Дивитись",
     ctaLink: "/catalog?category=zdorovia",
     imageUrl: "https://images.pexels.com/photos/3760259/pexels-photo-3760259.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
-    overlay: "linear-gradient(135deg, rgba(160, 125, 61, 0.7) 0%, rgba(138, 106, 47, 0.5) 100%)"
+    overlay: "linear-gradient(135deg, rgba(160, 125, 61, 0.45) 0%, rgba(138, 106, 47, 0.3) 100%)"
   },
   {
     id: 4,
@@ -48,7 +48,7 @@ const slides: Slide[] = [
     ctaText: "Оформити замовлення",
     ctaLink: "/catalog",
     imageUrl: "https://images.pexels.com/photos/4246120/pexels-photo-4246120.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
-    overlay: "linear-gradient(135deg, rgba(160, 125, 61, 0.8) 0%, rgba(138, 106, 47, 0.6) 100%)"
+    overlay: "linear-gradient(135deg, rgba(160, 125, 61, 0.5) 0%, rgba(138, 106, 47, 0.35) 100%)"
   }
 ];
 
