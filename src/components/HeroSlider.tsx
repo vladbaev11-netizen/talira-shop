@@ -10,7 +10,6 @@ interface Slide {
   ctaText: string;
   ctaLink: string;
   imageUrl: string;
-  overlay: string;
 }
 
 const slides: Slide[] = [
@@ -20,8 +19,7 @@ const slides: Slide[] = [
     subtitle: "Створіть ідеальний простір для краси",
     ctaText: "Переглянути",
     ctaLink: "/catalog?category=krasa",
-    imageUrl: "https://images.pexels.com/photos/1090638/pexels-photo-1090638.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
-    overlay: "linear-gradient(135deg, rgba(26, 22, 18, 0.4) 0%, rgba(26, 22, 18, 0.2) 100%)"
+    imageUrl: "https://images.pexels.com/photos/1090638/pexels-photo-1090638.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop"
   },
   {
     id: 2,
@@ -29,8 +27,7 @@ const slides: Slide[] = [
     subtitle: "Меблі • Електроніка • Краса • Здоров'я",
     ctaText: "Весь каталог",
     ctaLink: "/catalog",
-    imageUrl: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
-    overlay: "linear-gradient(135deg, rgba(245, 241, 232, 0.7) 0%, rgba(232, 220, 200, 0.5) 100%)"
+    imageUrl: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop"
   },
   {
     id: 3,
@@ -38,8 +35,7 @@ const slides: Slide[] = [
     subtitle: "Професійний догляд у комфорті власної оселі",
     ctaText: "Дивитись",
     ctaLink: "/catalog?category=zdorovia",
-    imageUrl: "https://images.pexels.com/photos/3760259/pexels-photo-3760259.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
-    overlay: "linear-gradient(135deg, rgba(160, 125, 61, 0.45) 0%, rgba(138, 106, 47, 0.3) 100%)"
+    imageUrl: "https://images.pexels.com/photos/3760259/pexels-photo-3760259.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop"
   },
   {
     id: 4,
@@ -47,8 +43,7 @@ const slides: Slide[] = [
     subtitle: "Новою Поштою 1-3 дні • Оплата при отриманні",
     ctaText: "Оформити замовлення",
     ctaLink: "/catalog",
-    imageUrl: "https://images.pexels.com/photos/4246120/pexels-photo-4246120.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
-    overlay: "linear-gradient(135deg, rgba(160, 125, 61, 0.5) 0%, rgba(138, 106, 47, 0.35) 100%)"
+    imageUrl: "https://images.pexels.com/photos/4246120/pexels-photo-4246120.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop"
   }
 ];
 
@@ -58,28 +53,15 @@ export default function HeroSlider() {
 
   useEffect(() => {
     if (isPaused) return;
-
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, [isPaused]);
 
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  };
-
-  const slide = slides[currentSlide];
-  const isDark = slide.id === 1 || slide.id === 3 || slide.id === 4;
+  const goToSlide = (index: number) => setCurrentSlide(index);
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
   return (
     <div 
@@ -87,78 +69,42 @@ export default function HeroSlider() {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Slides */}
-      {slides.map((s, index) => {
-        const isActive = currentSlide === index;
-        const textColor = s.id === 2 ? '#1a1612' : '#ffffff';
-
-        return (
-          <div
-            key={s.id}
-            className={`hero-slide ${isActive ? 'active' : ''}`}
-          >
-            {/* Background Image */}
-            <div 
-              className="hero-bg"
-              style={{
-                backgroundImage: `url(${s.imageUrl})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-              }}
-            />
-            
-            {/* Overlay */}
-            <div 
-              className="hero-overlay"
-              style={{ background: s.overlay }}
-            />
-
-            {/* Content */}
-            <div className="hero-content">
-              <div className="hero-text-card">
-                <h1 className="hero-title" style={{ color: textColor }}>
-                  {s.title}
-                </h1>
-                
-                <p className="hero-subtitle" style={{ color: textColor }}>
-                  {s.subtitle}
-                </p>
-
-                <Link 
-                  href={s.ctaLink}
-                  className="hero-cta"
-                  target={s.ctaLink.startsWith('http') ? '_blank' : undefined}
-                >
-                  {s.ctaText}
-                </Link>
-              </div>
+      {slides.map((slide, index) => (
+        <div
+          key={slide.id}
+          className={`hero-slide ${currentSlide === index ? 'active' : ''}`}
+          style={{
+            backgroundImage: `url(${slide.imageUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          <div className="hero-overlay" />
+          
+          <div className="hero-container">
+            <div className="hero-content-box">
+              <h1 className="hero-title">{slide.title}</h1>
+              <p className="hero-subtitle">{slide.subtitle}</p>
+              <Link href={slide.ctaLink} className="hero-button">
+                {slide.ctaText}
+              </Link>
             </div>
           </div>
-        );
-      })}
+        </div>
+      ))}
 
-      {/* Navigation Arrows */}
-      <button
-        className="hero-arrow hero-arrow-left"
-        onClick={prevSlide}
-        aria-label="Попередній слайд"
-      >
+      <button className="hero-arrow hero-arrow-left" onClick={prevSlide} aria-label="Попередній">
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
           <path d="M15 18l-6-6 6-6" />
         </svg>
       </button>
 
-      <button
-        className="hero-arrow hero-arrow-right"
-        onClick={nextSlide}
-        aria-label="Наступний слайд"
-      >
+      <button className="hero-arrow hero-arrow-right" onClick={nextSlide} aria-label="Наступний">
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
           <path d="M9 18l6-6-6-6" />
         </svg>
       </button>
 
-      {/* Dots Navigation */}
       <div className="hero-dots">
         {slides.map((_, index) => (
           <button
@@ -176,6 +122,7 @@ export default function HeroSlider() {
           width: 100%;
           height: 600px;
           overflow: hidden;
+          background: #f5f1e8;
         }
 
         .hero-slide {
@@ -186,7 +133,7 @@ export default function HeroSlider() {
           height: 100%;
           opacity: 0;
           visibility: hidden;
-          transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+          transition: opacity 1s ease-in-out;
         }
 
         .hero-slide.active {
@@ -195,28 +142,20 @@ export default function HeroSlider() {
           z-index: 1;
         }
 
-        .hero-bg {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 0;
-        }
-
         .hero-overlay {
           position: absolute;
           top: 0;
           left: 0;
           width: 100%;
           height: 100%;
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
           z-index: 1;
         }
 
-        .hero-content {
+        .hero-container {
           position: relative;
           z-index: 2;
-          max-width: 1200px;
+          max-width: 1400px;
           margin: 0 auto;
           padding: 0 60px;
           height: 100%;
@@ -224,65 +163,65 @@ export default function HeroSlider() {
           align-items: center;
         }
 
-        .hero-text-card {
-          max-width: 650px;
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          padding: 50px 60px;
-          border-radius: 12px;
-          box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
-          animation: fadeInUp 1s ease-out;
+        .hero-content-box {
+          max-width: 700px;
+          background: rgba(255, 255, 255, 0.97);
+          padding: 60px 70px;
+          border-radius: 16px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+          animation: slideUp 0.8s ease-out;
         }
 
         .hero-title {
           font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(38px, 5vw, 64px);
+          font-size: 56px;
           font-weight: 600;
           line-height: 1.1;
-          margin-bottom: 20px;
-          color: #1a1612 !important;
+          color: #1a1612;
+          margin: 0 0 20px 0;
         }
 
         .hero-subtitle {
           font-family: var(--font-sans);
-          font-size: clamp(16px, 2vw, 20px);
+          font-size: 18px;
           line-height: 1.6;
-          margin-bottom: 35px;
-          color: #3d3530 !important;
+          color: #3d3530;
+          margin: 0 0 32px 0;
         }
 
-        .hero-cta {
+        .hero-button {
           display: inline-block;
-          padding: 16px 40px;
-          font-family: var(--font-sans);
-          font-size: 14px;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          border-radius: 6px;
-          text-decoration: none;
-          transition: all 0.3s ease;
+          padding: 18px 48px;
           background: #a07d3d;
           color: #ffffff;
+          font-family: var(--font-sans);
+          font-size: 15px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          text-decoration: none;
+          border-radius: 8px;
           border: none;
-          box-shadow: 0 3px 12px rgba(160, 125, 61, 0.5);
+          box-shadow: 0 6px 20px rgba(160, 125, 61, 0.4);
+          transition: all 0.3s ease;
+          cursor: pointer;
         }
 
-        .hero-cta:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 5px 20px rgba(160, 125, 61, 0.7);
+        .hero-button:hover {
           background: #b8904a;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(160, 125, 61, 0.6);
         }
 
-        .hero-cta:active {
-          transform: translateY(-1px);
+        .hero-button:active {
+          transform: translateY(0);
         }
 
         .hero-arrow {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          background: rgba(26, 22, 18, 0.7);
+          background: rgba(0, 0, 0, 0.5);
           backdrop-filter: blur(10px);
           border: 2px solid rgba(255, 255, 255, 0.3);
           width: 56px;
@@ -292,9 +231,9 @@ export default function HeroSlider() {
           display: flex;
           align-items: center;
           justify-content: center;
+          color: white;
           transition: all 0.3s ease;
           z-index: 10;
-          color: white;
           opacity: 0;
         }
 
@@ -303,9 +242,9 @@ export default function HeroSlider() {
         }
 
         .hero-arrow:hover {
-          background: rgba(26, 22, 18, 0.9);
+          background: rgba(0, 0, 0, 0.7);
           border-color: rgba(255, 255, 255, 0.5);
-          transform: translateY(-50%) scale(1.08);
+          transform: translateY(-50%) scale(1.05);
         }
 
         .hero-arrow-left {
@@ -318,17 +257,17 @@ export default function HeroSlider() {
 
         .hero-dots {
           position: absolute;
-          bottom: 50px;
+          bottom: 40px;
           left: 50%;
           transform: translateX(-50%);
           display: flex;
-          gap: 14px;
+          gap: 12px;
           z-index: 10;
         }
 
         .hero-dot {
-          width: 12px;
-          height: 12px;
+          width: 10px;
+          height: 10px;
           border-radius: 50%;
           background: rgba(255, 255, 255, 0.5);
           border: none;
@@ -338,23 +277,32 @@ export default function HeroSlider() {
         }
 
         .hero-dot:hover {
-          background: rgba(255, 255, 255, 0.75);
+          background: rgba(255, 255, 255, 0.8);
         }
 
         .hero-dot.active {
           background: white;
-          width: 36px;
-          border-radius: 6px;
+          width: 32px;
+          border-radius: 5px;
         }
 
-        @keyframes fadeInUp {
+        @keyframes slideUp {
           from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(40px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
+          }
+        }
+
+        @media (max-width: 1024px) {
+          .hero-title {
+            font-size: 44px;
+          }
+          .hero-subtitle {
+            font-size: 16px;
           }
         }
 
@@ -363,20 +311,25 @@ export default function HeroSlider() {
             height: 500px;
           }
 
-          .hero-content {
+          .hero-container {
             padding: 0 24px;
           }
 
+          .hero-content-box {
+            padding: 40px 32px;
+            max-width: 100%;
+          }
+
           .hero-title {
-            font-size: 38px;
+            font-size: 36px;
           }
 
           .hero-subtitle {
-            font-size: 17px;
-            margin-bottom: 32px;
+            font-size: 15px;
+            margin-bottom: 24px;
           }
 
-          .hero-cta {
+          .hero-button {
             width: 100%;
             text-align: center;
             padding: 16px 32px;
@@ -389,15 +342,15 @@ export default function HeroSlider() {
           }
 
           .hero-arrow-left {
-            left: 20px;
+            left: 16px;
           }
 
           .hero-arrow-right {
-            right: 20px;
+            right: 16px;
           }
 
           .hero-dots {
-            bottom: 30px;
+            bottom: 24px;
           }
         }
       `}</style>
