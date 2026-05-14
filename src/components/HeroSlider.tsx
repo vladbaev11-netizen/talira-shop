@@ -9,8 +9,7 @@ interface Slide {
   subtitle: string;
   ctaText: string;
   ctaLink: string;
-  imageUrl?: string;
-  bgColor: string;
+  gradient: string;
   textColor: string;
 }
 
@@ -21,8 +20,7 @@ const slides: Slide[] = [
     subtitle: "З RGB підсвіткою та HD дзеркалами — створи свій ідеальний простір",
     ctaText: "Переглянути",
     ctaLink: "/catalog?category=krasa",
-    imageUrl: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=1920&h=800&fit=crop&q=80",
-    bgColor: "rgba(0, 0, 0, 0.35)",
+    gradient: "linear-gradient(135deg, #1a1612 0%, #3d3530 50%, #1a1612 100%)",
     textColor: "white"
   },
   {
@@ -31,8 +29,7 @@ const slides: Slide[] = [
     subtitle: "Професійний догляд у комфорті власної оселі",
     ctaText: "Дивитись",
     ctaLink: "/catalog?category=zdorovia",
-    imageUrl: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1920&h=800&fit=crop&q=80",
-    bgColor: "rgba(160, 125, 61, 0.4)",
+    gradient: "linear-gradient(135deg, #a07d3d 0%, #c9a052 50%, #8a6a2f 100%)",
     textColor: "white"
   },
   {
@@ -41,7 +38,7 @@ const slides: Slide[] = [
     subtitle: "Новою Поштою по всій Україні • Оплата при отриманні",
     ctaText: "Оформити замовлення",
     ctaLink: "/catalog",
-    bgColor: "#a07d3d",
+    gradient: "linear-gradient(135deg, #8a6a2f 0%, #a07d3d 100%)",
     textColor: "white"
   },
   {
@@ -50,7 +47,7 @@ const slides: Slide[] = [
     subtitle: "Меблі, електроніка, краса — все для комфортного життя",
     ctaText: "Весь каталог",
     ctaLink: "/catalog",
-    bgColor: "#f5f1e8",
+    gradient: "linear-gradient(135deg, #f5f1e8 0%, #e8dcc8 50%, #f5f1e8 100%)",
     textColor: "#1a1612"
   }
 ];
@@ -81,8 +78,6 @@ export default function HeroSlider() {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
-  const slide = slides[currentSlide];
-
   return (
     <div 
       className="hero-slider"
@@ -90,36 +85,32 @@ export default function HeroSlider() {
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Slides */}
-      {slides.map((s, index) => {
+      {slides.map((slide, index) => {
         const isActive = currentSlide === index;
 
         return (
           <div
-            key={s.id}
+            key={slide.id}
             className={`hero-slide ${isActive ? 'active' : ''}`}
             style={{
-              background: s.imageUrl 
-                ? `linear-gradient(${s.bgColor}, ${s.bgColor}), url(${s.imageUrl})`
-                : s.bgColor,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
+              background: slide.gradient
             }}
           >
             <div className="hero-content">
               <div className="hero-text">
-                <h1 className="hero-title" style={{ color: s.textColor }}>
-                  {s.title}
+                <h1 className="hero-title" style={{ color: slide.textColor }}>
+                  {slide.title}
                 </h1>
                 
-                <p className="hero-subtitle" style={{ color: s.textColor }}>
-                  {s.subtitle}
+                <p className="hero-subtitle" style={{ color: slide.textColor }}>
+                  {slide.subtitle}
                 </p>
 
                 <Link 
-                  href={s.ctaLink}
+                  href={slide.ctaLink}
                   className="hero-cta"
                 >
-                  {s.ctaText}
+                  {slide.ctaText}
                 </Link>
               </div>
             </div>
@@ -207,7 +198,6 @@ export default function HeroSlider() {
           font-weight: 600;
           line-height: 1.1;
           margin-bottom: 24px;
-          text-shadow: 0 3px 25px rgba(0, 0, 0, 0.4);
         }
 
         .hero-subtitle {
@@ -215,7 +205,6 @@ export default function HeroSlider() {
           font-size: clamp(16px, 2vw, 22px);
           line-height: 1.6;
           margin-bottom: 40px;
-          text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
           opacity: 0.95;
         }
 
@@ -230,15 +219,15 @@ export default function HeroSlider() {
           border-radius: 6px;
           text-decoration: none;
           transition: all 0.3s ease;
-          background: var(--gold-deep, #a07d3d);
+          background: #a07d3d;
           color: white;
-          border: 2px solid var(--gold-deep, #a07d3d);
+          border: 2px solid #a07d3d;
           box-shadow: 0 4px 20px rgba(160, 125, 61, 0.4);
         }
 
         .hero-cta:hover {
           transform: translateY(-2px);
-          box-shadow: 0 6px 30px rgba(160, 125, 61, 0.5);
+          box-shadow: 0 6px 30px rgba(160, 125, 61, 0.6);
           background: #8a6a2f;
           border-color: #8a6a2f;
         }
