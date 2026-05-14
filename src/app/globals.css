@@ -413,3 +413,18 @@ img { max-width: 100%; height: auto; }
     letter-spacing: 0.03em !important;
   }
 }
+
+/* Spinner для loading states */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--line, #e0d4ba);
+  border-top-color: var(--gold-deep, #a07d3d);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
