@@ -1,70 +1,147 @@
-import { client } from "@/sanity/client";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import Link from "next/link";
+import ProductCard from "@/components/ProductCard";
 import CatalogFilters from "@/components/CatalogFilters";
+import InfiniteScroll from "@/components/InfiniteScroll";
 
-async function getProducts() {
-  return client.fetch(`*[_type == "product"] | order(_createdAt desc) {
-    name, slug, price, oldPrice, badge, inStock, mainImage,externalImages,
-    "category": category->{ name, slug },
-    "subcategory": subcategory->{ name, slug, "parentCategory": parentCategory->{ slug } }
-  }`);
-}
+export default function CatalogPage() {
+  const searchParams = useSearchParams();
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
 
-async function getCategories() {
-  return client.fetch(`*[_type == "category"] | order(order asc) { name, slug }`);
-}
+  const category = searchParams.get('category');
+  const search = searchParams.get('search');
 
-async function getSubcategories() {
-  return client.fetch(`*[_type == "subcategory"] | order(order asc) {
-    name, slug,
-    "parentCategory": parentCategory->{ slug }
-  }`);
-}
+  // Загрузка товаров
+  useEffect(() => {
+    loadProducts(true);
+  }, [category, search, searchParams]);
 
-export const revalidate = 60;
-export const metadata = { title: "Каталог — TALIRA", description: "Повний каталог преміум-товарів для дому, краси та здоров'я" };
+  const loadProducts = async (reset = false) => {
+    setLoading(true);
+    
+    try {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('page', reset ? '1' : String(page));
+      params.set('limit', '24');
 
-export default async function CatalogPage() {
-  const [products, categories, subcategories] = await Promise.all([getProducts(), getCategories(), getSubcategories()]);
+      const response = await fetch(`/api/products?${params.toString()}`);
+      const data = await response.json();
+
+      if (reset) {
+        setProducts(data.products || []);
+        setPage(1);
+      } else {
+        setProducts(prev => [...prev, ...(data.products || [])]);
+      }
+
+      setHasMore(data.hasMore || false);
+      setLoading(false);
+    } catch (error) {
+      console.error('Failed to load products:', error);
+      setLoading(false);
+    }
+  };
+
+  const loadMore = async () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', String(nextPage));
+    params.set('limit', '24');
+
+    const response = await fetch(`/api/products?${params.toString()}`);
+    const data = await response.json();
+
+    setProducts(prev => [...prev, ...(data.products || [])]);
+    setHasMore(data.hasMore || false);
+  };
 
   return (
     <>
       <Header />
-      <div className="catalog-container" style={{ maxWidth: "1320px", margin: "0 auto", padding: "20px 48px", fontSize: "11px", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--text-dim)" }}>
-        <Link href="/" style={{ color: "var(--text)" }}>{"Головна"}</Link>
-        <span style={{ margin: "0 12px" }}>/</span>
-        <span style={{ color: "var(--ink)" }}>{"Каталог"}</span>
-      </div>
 
-      <section style={{ padding: "20px 0 40px", borderBottom: "1px solid var(--line)" }}>
-        <div className="catalog-container" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", gap: "40px", flexWrap: "wrap" }}>
-            <div>
-              <span style={{ color: "var(--gold-deep)", fontSize: "11px", letterSpacing: ".3em", textTransform: "uppercase", fontWeight: 500, display: "block", marginBottom: "12px" }}>{"— Весь каталог —"}</span>
-              <h1 className="title-page" style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: 1, fontWeight: 400, letterSpacing: "-.01em" }}>
-                {"Каталог "}<em style={{ color: "var(--gold-deep)", fontStyle: "italic", fontWeight: 300 }}>{"колекції"}</em>
-              </h1>
-            </div>
-            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "14px", color: "var(--text)", fontStyle: "italic" }}>
-              <strong style={{ fontStyle: "normal", fontWeight: 500, color: "var(--gold-deep)", fontSize: "16px" }}>{products.length}</strong> {"товарів"}
-            </div>
+      <div style={{ padding: "40px 0" }}>
+        <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 20px" }}>
+          {/* Заголовок */}
+          <div style={{ marginBottom: "32px" }}>
+            <h1 style={{ 
+              fontFamily: "'Cormorant Garamond', serif", 
+              fontSize: "36px", 
+              fontWeight: 400,
+              marginBottom: "8px"
+            }}>
+              {search ? `Пошук: "${search}"` : category ? category : "Каталог колекції"}
+            </h1>
+            <p style={{ fontSize: "14px", color: "var(--text-dim)" }}>
+              Знайдено {products.length} товарів
+            </p>
+          </div>
+
+          {/* Layout з фільтрами и товарами */}
+          <div style={{ 
+            display: "grid", 
+            gridTemplateColumns: "280px 1fr", 
+            gap: "32px" 
+          }}>
+            {/* Фильтры */}
+            <aside>
+              <CatalogFilters onFilterChange={() => loadProducts(true)} />
+            </aside>
+
+            {/* Товары */}
+            <main>
+              <InfiniteScroll
+                onLoadMore={loadMore}
+                hasMore={hasMore}
+                loading={loading}
+              >
+                <div className="products-grid">
+                  {products.map((product: any) => (
+                    <ProductCard 
+                      key={product._id || product.slug?.current} 
+                      product={product} 
+                    />
+                  ))}
+                </div>
+              </InfiniteScroll>
+
+              {/* Пустое состояние */}
+              {!loading && products.length === 0 && (
+                <div style={{ 
+                  textAlign: "center", 
+                  padding: "80px 20px",
+                  color: "var(--text-dim)"
+                }}>
+                  <p style={{ fontSize: "18px", marginBottom: "8px" }}>
+                    Товарів не знайдено
+                  </p>
+                  <p style={{ fontSize: "14px" }}>
+                    Спробуйте змінити фільтри або пошуковий запит
+                  </p>
+                </div>
+              )}
+            </main>
           </div>
         </div>
-      </section>
-
-      <section style={{ padding: "40px 0 80px" }}>
-        <div className="catalog-container" style={{ maxWidth: "1320px", margin: "0 auto" }}>
-          <CatalogFilters
-            products={JSON.parse(JSON.stringify(products))}
-            categories={JSON.parse(JSON.stringify(categories))}
-            subcategories={JSON.parse(JSON.stringify(subcategories))}
-          />
-        </div>
-      </section>
+      </div>
 
       <Footer />
+
+      <style jsx>{`
+        @media (max-width: 1024px) {
+          div[style*="grid-template-columns: 280px 1fr"] {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </>
   );
 }
