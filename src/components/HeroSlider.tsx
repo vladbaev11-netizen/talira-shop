@@ -115,7 +115,7 @@ export default function HeroSlider() {
 
             {/* Content */}
             <div className="hero-content">
-              <div className="hero-text">
+              <div className="hero-text-card">
                 <h1 className="hero-title" style={{ color: textColor }}>
                   {s.title}
                 </h1>
@@ -224,52 +224,54 @@ export default function HeroSlider() {
           align-items: center;
         }
 
-        .hero-text {
-          max-width: 700px;
+        .hero-text-card {
+          max-width: 650px;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          padding: 50px 60px;
+          border-radius: 12px;
+          box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
           animation: fadeInUp 1s ease-out;
         }
 
         .hero-title {
           font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(42px, 6vw, 76px);
+          font-size: clamp(38px, 5vw, 64px);
           font-weight: 600;
           line-height: 1.1;
-          margin-bottom: 24px;
-          text-shadow: 0 3px 20px rgba(0, 0, 0, 0.3);
+          margin-bottom: 20px;
+          color: #1a1612 !important;
         }
 
         .hero-subtitle {
           font-family: var(--font-sans);
-          font-size: clamp(17px, 2.2vw, 24px);
+          font-size: clamp(16px, 2vw, 20px);
           line-height: 1.6;
-          margin-bottom: 40px;
-          opacity: 0.95;
-          text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+          margin-bottom: 35px;
+          color: #3d3530 !important;
         }
 
         .hero-cta {
           display: inline-block;
-          padding: 18px 48px;
+          padding: 20px 50px;
           font-family: var(--font-sans);
           font-size: 16px;
           font-weight: 700;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.05em;
           text-transform: uppercase;
           border-radius: 8px;
           text-decoration: none;
           transition: all 0.3s ease;
-          background: #a07d3d;
+          background: #1a1612;
           color: #ffffff;
-          border: 3px solid #a07d3d;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          border: none;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
 
         .hero-cta:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-          background: #8a6a2f;
-          border-color: #8a6a2f;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+          background: #000000;
         }
 
         .hero-cta:active {
