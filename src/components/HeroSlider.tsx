@@ -11,7 +11,7 @@ interface Slide {
   ctaLink: string;
   imageUrl?: string;
   bgColor: string;
-  darkText?: boolean;
+  textColor: string;
 }
 
 const slides: Slide[] = [
@@ -22,8 +22,8 @@ const slides: Slide[] = [
     ctaText: "Переглянути",
     ctaLink: "/catalog?category=krasa",
     imageUrl: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=1920&h=800&fit=crop&q=80",
-    bgColor: "rgba(26, 22, 18, 0.4)",
-    darkText: false
+    bgColor: "rgba(0, 0, 0, 0.35)",
+    textColor: "white"
   },
   {
     id: 2,
@@ -32,8 +32,8 @@ const slides: Slide[] = [
     ctaText: "Дивитись",
     ctaLink: "/catalog?category=zdorovia",
     imageUrl: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1920&h=800&fit=crop&q=80",
-    bgColor: "rgba(160, 125, 61, 0.5)",
-    darkText: false
+    bgColor: "rgba(160, 125, 61, 0.4)",
+    textColor: "white"
   },
   {
     id: 3,
@@ -42,7 +42,7 @@ const slides: Slide[] = [
     ctaText: "Оформити замовлення",
     ctaLink: "/catalog",
     bgColor: "#a07d3d",
-    darkText: false
+    textColor: "white"
   },
   {
     id: 4,
@@ -51,7 +51,7 @@ const slides: Slide[] = [
     ctaText: "Весь каталог",
     ctaLink: "/catalog",
     bgColor: "#f5f1e8",
-    darkText: true
+    textColor: "#1a1612"
   }
 ];
 
@@ -81,6 +81,8 @@ export default function HeroSlider() {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
+  const slide = slides[currentSlide];
+
   return (
     <div 
       className="hero-slider"
@@ -88,44 +90,36 @@ export default function HeroSlider() {
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Slides */}
-      {slides.map((slide, index) => {
+      {slides.map((s, index) => {
         const isActive = currentSlide === index;
-        const textColor = slide.darkText ? '#1a1612' : '#ffffff';
-        const buttonBg = slide.darkText ? '#a07d3d' : '#ffffff';
-        const buttonColor = slide.darkText ? '#ffffff' : '#1a1612';
 
         return (
           <div
-            key={slide.id}
+            key={s.id}
             className={`hero-slide ${isActive ? 'active' : ''}`}
             style={{
-              background: slide.imageUrl 
-                ? `linear-gradient(${slide.bgColor}, ${slide.bgColor}), url(${slide.imageUrl})`
-                : slide.bgColor,
+              background: s.imageUrl 
+                ? `linear-gradient(${s.bgColor}, ${s.bgColor}), url(${s.imageUrl})`
+                : s.bgColor,
               backgroundSize: 'cover',
               backgroundPosition: 'center'
             }}
           >
             <div className="hero-content">
               <div className="hero-text">
-                <h1 className="hero-title" style={{ color: textColor }}>
-                  {slide.title}
+                <h1 className="hero-title" style={{ color: s.textColor }}>
+                  {s.title}
                 </h1>
                 
-                <p className="hero-subtitle" style={{ color: textColor }}>
-                  {slide.subtitle}
+                <p className="hero-subtitle" style={{ color: s.textColor }}>
+                  {s.subtitle}
                 </p>
 
                 <Link 
-                  href={slide.ctaLink}
+                  href={s.ctaLink}
                   className="hero-cta"
-                  style={{
-                    background: buttonBg,
-                    color: buttonColor,
-                    borderColor: buttonBg
-                  }}
                 >
-                  {slide.ctaText}
+                  {s.ctaText}
                 </Link>
               </div>
             </div>
@@ -139,7 +133,7 @@ export default function HeroSlider() {
         onClick={prevSlide}
         aria-label="Попередній слайд"
       >
-        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
           <path d="M15 18l-6-6 6-6" />
         </svg>
       </button>
@@ -149,7 +143,7 @@ export default function HeroSlider() {
         onClick={nextSlide}
         aria-label="Наступний слайд"
       >
-        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
           <path d="M9 18l6-6-6-6" />
         </svg>
       </button>
@@ -213,7 +207,7 @@ export default function HeroSlider() {
           font-weight: 600;
           line-height: 1.1;
           margin-bottom: 24px;
-          text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+          text-shadow: 0 3px 25px rgba(0, 0, 0, 0.4);
         }
 
         .hero-subtitle {
@@ -221,28 +215,32 @@ export default function HeroSlider() {
           font-size: clamp(16px, 2vw, 22px);
           line-height: 1.6;
           margin-bottom: 40px;
-          text-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+          text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
           opacity: 0.95;
         }
 
         .hero-cta {
           display: inline-block;
-          padding: 18px 48px;
+          padding: 16px 40px;
           font-family: var(--font-sans);
-          font-size: 15px;
+          font-size: 14px;
           font-weight: 600;
-          letter-spacing: 0.05em;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
           border-radius: 6px;
           text-decoration: none;
           transition: all 0.3s ease;
-          border: 2px solid;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+          background: var(--gold-deep, #a07d3d);
+          color: white;
+          border: 2px solid var(--gold-deep, #a07d3d);
+          box-shadow: 0 4px 20px rgba(160, 125, 61, 0.4);
         }
 
         .hero-cta:hover {
           transform: translateY(-2px);
-          box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 6px 30px rgba(160, 125, 61, 0.5);
+          background: #8a6a2f;
+          border-color: #8a6a2f;
         }
 
         .hero-cta:active {
@@ -253,11 +251,11 @@ export default function HeroSlider() {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          background: rgba(0, 0, 0, 0.3);
-          backdrop-filter: blur(10px);
-          border: none;
-          width: 48px;
-          height: 48px;
+          background: rgba(26, 22, 18, 0.6);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          width: 52px;
+          height: 52px;
           border-radius: 50%;
           cursor: pointer;
           display: flex;
@@ -274,21 +272,22 @@ export default function HeroSlider() {
         }
 
         .hero-arrow:hover {
-          background: rgba(0, 0, 0, 0.5);
-          transform: translateY(-50%) scale(1.1);
+          background: rgba(26, 22, 18, 0.8);
+          border-color: rgba(255, 255, 255, 0.4);
+          transform: translateY(-50%) scale(1.05);
         }
 
         .hero-arrow-left {
-          left: 24px;
+          left: 32px;
         }
 
         .hero-arrow-right {
-          right: 24px;
+          right: 32px;
         }
 
         .hero-dots {
           position: absolute;
-          bottom: 32px;
+          bottom: 40px;
           left: 50%;
           transform: translateX(-50%);
           display: flex;
@@ -305,6 +304,10 @@ export default function HeroSlider() {
           cursor: pointer;
           transition: all 0.3s ease;
           padding: 0;
+        }
+
+        .hero-dot:hover {
+          background: rgba(255, 255, 255, 0.7);
         }
 
         .hero-dot.active {
@@ -339,20 +342,30 @@ export default function HeroSlider() {
 
           .hero-subtitle {
             font-size: 16px;
+            margin-bottom: 32px;
           }
 
           .hero-cta {
             width: 100%;
             text-align: center;
-            padding: 16px 32px;
+            padding: 14px 32px;
           }
 
           .hero-arrow {
-            display: none;
+            width: 44px;
+            height: 44px;
+          }
+
+          .hero-arrow-left {
+            left: 16px;
+          }
+
+          .hero-arrow-right {
+            right: 16px;
           }
 
           .hero-dots {
-            bottom: 20px;
+            bottom: 24px;
           }
         }
       `}</style>
