@@ -6,17 +6,6 @@ import HeroSlider from "@/components/HeroSlider";
 import CategoryCarousel from "@/components/CategoryCarousel";
 import Link from "next/link";
 
-async function getHeroProducts() {
-  // Random 5 products with both image and good price
-  const all = await client.fetch(`*[_type == "product" && defined(externalImages) && price > 500 && price < 5000] {
-    name, slug, price, oldPrice, badge, mainImage, externalImages,
-    "category": category->{ name }
-  }`);
-  // Shuffle and take 5
-  const shuffled = all.sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 5);
-}
-
 async function getPopularProducts() {
   // Random 12 products with images
   const all = await client.fetch(`*[_type == "product" && defined(externalImages) && price > 200] {
@@ -41,8 +30,7 @@ async function getCategories() {
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [heroProducts, popularProducts, totalCount, categories] = await Promise.all([
-    getHeroProducts(),
+  const [popularProducts, totalCount, categories] = await Promise.all([
     getPopularProducts(),
     getTotalCount(),
     getCategories()
@@ -52,37 +40,8 @@ export default async function HomePage() {
     <>
       <Header />
 
-      {/* HERO */}
-      <section style={{ padding: "72px 0", borderBottom: "1px solid var(--line)" }}>
-        <div className="container-pad grid-hero" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
-          <div style={{ padding: "32px 0", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <div style={{ fontSize: "10px", letterSpacing: ".25em", textTransform: "uppercase", color: "var(--gold-deep)", fontWeight: 500, marginBottom: "16px" }}>
-              {"Нова колекція · 2026"}
-            </div>
-            <h1 className="title-hero" style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: "1", fontWeight: 400, letterSpacing: "-.01em", marginBottom: "24px" }}>
-              {"Преміум-товари для дому, "}
-              <em style={{ color: "var(--gold-deep)", fontStyle: "italic", fontWeight: 300 }}>{"краси та здоров\u0027я"}</em>
-            </h1>
-            <div style={{ display: "flex", gap: "14px", alignItems: "center", marginBottom: "24px" }}>
-              <Link href="/catalog" style={{ background: "var(--ink)", color: "var(--bg)", padding: "14px 28px", fontSize: "10px", fontWeight: 500, letterSpacing: ".22em", textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: "8px", borderRadius: "4px" }}>
-                {"Каталог"}
-                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-              </Link>
-              <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>{totalCount} {"товарів"}</span>
-            </div>
-
-            <div style={{ paddingTop: "16px", borderTop: "1px solid var(--line-soft)" }}>
-              <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-                <MiniTrust text="Оплата при отриманні" />
-                <MiniTrust text="Доставка 1–3 дні" />
-                <MiniTrust text="Гарантія 14 днів" />
-              </div>
-            </div>
-          </div>
-
-          <HeroSlider products={heroProducts} />
-        </div>
-      </section>
+      {/* HERO SLIDER - НОВЫЙ КОМПОНЕНТ */}
+      <HeroSlider />
 
       {/* CATEGORIES CAROUSEL */}
       {categories.length > 0 && (
@@ -142,15 +101,6 @@ export default async function HomePage() {
 
       <Footer />
     </>
-  );
-}
-
-function MiniTrust({ text }: { text: string }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text)" }}>
-      <svg width="12" height="12" fill="none" stroke="var(--gold-deep)" strokeWidth="2" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
-      {text}
-    </div>
   );
 }
 

@@ -1,159 +1,229 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import imageUrlBuilder from "@sanity/image-url";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
-const builder = imageUrlBuilder({
-  projectId: "777maat6",
-  dataset: "production",
-});
-
-function urlForSlider(source: any) {
-  return builder.image(source);
+interface Slide {
+  id: number;
+  title: string;
+  subtitle: string;
+  ctaText: string;
+  ctaLink: string;
+  image?: string;
+  bgGradient: string;
 }
 
-interface HeroProduct {
-  name: string;
-  slug: { current: string };
-  price: number;
-  oldPrice?: number;
-  mainImage?: any;
-  externalImages?: string[];
-  category?: { name: string };
-}
+const slides: Slide[] = [
+  {
+    id: 1,
+    title: "4500+ товарів для дому, краси та здоров'я",
+    subtitle: "Нова колекція 2026 вже в каталозі",
+    ctaText: "Переглянути каталог",
+    ctaLink: "/catalog",
+    bgGradient: "linear-gradient(135deg, #f5f1e8 0%, #e8dcc8 100%)"
+  },
+  {
+    id: 2,
+    title: "Доставка Новою Поштою по всій Україні",
+    subtitle: "Відправка замовлень щодня — отримайте за 1-3 дні",
+    ctaText: "Оформити замовлення",
+    ctaLink: "/catalog",
+    bgGradient: "linear-gradient(135deg, #f5f1e8 0%, #d4c5a9 100%)"
+  },
+  {
+    id: 3,
+    title: "Підтримка 24/7 в Telegram та Instagram",
+    subtitle: "Перевірка товару перед відправкою — гарантія якості",
+    ctaText: "Зв'язатися з нами",
+    ctaLink: "/contacts",
+    bgGradient: "linear-gradient(135deg, #f5f1e8 0%, #e0d4ba 100%)"
+  },
+  {
+    id: 4,
+    title: "Знижки до -30% на обрані товари",
+    subtitle: "Оновлюємо пропозиції щотижня",
+    ctaText: "Товари зі знижкою",
+    ctaLink: "/catalog?sale=true",
+    bgGradient: "linear-gradient(135deg, #a07d3d 0%, #8a6a2f 100%)"
+  }
+];
 
-export default function HeroSlider({ products }: { products: HeroProduct[] }) {
-  const [active, setActive] = useState(0);
+export default function HeroSlider() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (products.length <= 1) return;
+    if (isPaused) return;
+
     const interval = setInterval(() => {
-      setActive((prev) => (prev === products.length - 1 ? 0 : prev + 1));
-    }, 4000);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000); // Переключение каждые 5 секунд
+
     return () => clearInterval(interval);
-  }, [products.length]);
+  }, [isPaused]);
 
-  if (!products.length) return null;
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
 
-  const product = products[active];
-  const imageUrl = product.mainImage && product.mainImage.asset
-    ? urlForSlider(product.mainImage).width(900).height(560).url()
-    : product.externalImages && product.externalImages.length > 0
-      ? product.externalImages[0]
-      : "";
-  const isExternal = !(product.mainImage && product.mainImage.asset);
+  const slide = slides[currentSlide];
+  const isGoldSlide = slide.id === 4;
 
   return (
-    <div
+    <div 
+      className="hero-slider"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
       style={{
-        position: "relative",
-        width: "100%",
-        aspectRatio: "16/10",
-        background: "var(--bg-card)",
-        overflow: "hidden",
-        borderRadius: "8px",
-        border: "1px solid var(--line-soft)",
-        boxShadow: "0 8px 30px -10px rgba(26,22,18,.12)",
+        background: slide.bgGradient,
+        position: 'relative',
+        overflow: 'hidden',
+        transition: 'background 0.8s ease-in-out'
       }}
     >
-      <Link href={"/product/" + product.slug.current} style={{ display: "block", height: "100%" }}>
-        {imageUrl && (
-          <Image
-            src={imageUrl}
-            alt={product.name}
-            fill
-            style={{ objectFit: "cover", transition: "opacity .5s" }}
-            sizes="(max-width: 768px) 100vw, 50vw"
-            priority
-            unoptimized={isExternal}
+      <div className="hero-content">
+        <div className="hero-text">
+          <h1 
+            className="hero-title"
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: 'clamp(32px, 5vw, 64px)',
+              fontWeight: 600,
+              lineHeight: 1.1,
+              marginBottom: '16px',
+              color: isGoldSlide ? '#f5f1e8' : '#1a1612',
+              maxWidth: '800px'
+            }}
+          >
+            {slide.title}
+          </h1>
+          
+          <p 
+            className="hero-subtitle"
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: 'clamp(16px, 2vw, 20px)',
+              marginBottom: '32px',
+              color: isGoldSlide ? '#f5f1e8dd' : '#1a1612cc',
+              maxWidth: '600px'
+            }}
+          >
+            {slide.subtitle}
+          </p>
+
+          <Link 
+            href={slide.ctaLink}
+            className="hero-cta"
+            style={{
+              display: 'inline-block',
+              padding: '16px 40px',
+              background: isGoldSlide ? '#f5f1e8' : '#a07d3d',
+              color: isGoldSlide ? '#1a1612' : '#f5f1e8',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '16px',
+              fontWeight: 500,
+              borderRadius: '6px',
+              textDecoration: 'none',
+              transition: 'all 0.3s ease',
+              border: `2px solid ${isGoldSlide ? '#f5f1e8' : '#a07d3d'}`
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = isGoldSlide ? 'transparent' : '#8a6a2f';
+              e.currentTarget.style.color = isGoldSlide ? '#f5f1e8' : '#f5f1e8';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = isGoldSlide ? '#f5f1e8' : '#a07d3d';
+              e.currentTarget.style.color = isGoldSlide ? '#1a1612' : '#f5f1e8';
+            }}
+          >
+            {slide.ctaText}
+          </Link>
+        </div>
+      </div>
+
+      {/* Индикаторы слайдов */}
+      <div className="hero-dots">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className="hero-dot"
+            aria-label={`Перейти до слайду ${index + 1}`}
+            style={{
+              width: currentSlide === index ? '32px' : '8px',
+              height: '8px',
+              borderRadius: '4px',
+              background: currentSlide === index 
+                ? (isGoldSlide ? '#f5f1e8' : '#a07d3d')
+                : (isGoldSlide ? '#f5f1e8aa' : '#a07d3d66'),
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              margin: '0 4px'
+            }}
           />
-        )}
-      </Link>
+        ))}
+      </div>
 
-      <Link
-        href={"/product/" + product.slug.current}
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: "24px 24px",
-          background: "linear-gradient(180deg, transparent 0%, rgba(26,22,18,.8) 100%)",
-          color: "var(--bg)",
-          zIndex: 2,
-          display: "block",
-        }}
-      >
-        {product.category && (
-          <div style={{ fontSize: "9px", letterSpacing: ".22em", textTransform: "uppercase", color: "var(--gold-soft)", marginBottom: "6px" }}>
-            {product.category.name}
-          </div>
-        )}
-        <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 400, lineHeight: "1.2", marginBottom: "6px" }}>
-          {product.name}
-        </h3>
-        <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
-          <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 500 }}>
-            {product.price.toLocaleString("uk-UA")} {"₴"}
-          </span>
-          {product.oldPrice && (
-            <span style={{ fontSize: "13px", textDecoration: "line-through", opacity: 0.7 }}>
-              {product.oldPrice.toLocaleString("uk-UA")} {"₴"}
-            </span>
-          )}
-        </div>
-      </Link>
+      <style jsx>{`
+        .hero-slider {
+          width: 100%;
+          min-height: 600px;
+          display: flex;
+          align-items: center;
+          padding: 80px 20px;
+        }
 
-      {products.length > 1 && (
-        <div style={{ position: "absolute", top: "14px", right: "14px", display: "flex", gap: "5px", zIndex: 3 }}>
-          {products.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setActive(i)}
-              style={{
-                width: i === active ? "20px" : "7px",
-                height: "7px",
-                borderRadius: "4px",
-                background: i === active ? "#fff" : "rgba(255,255,255,.4)",
-                border: "none",
-                cursor: "pointer",
-                transition: "all .3s",
-                padding: 0,
-              }}
-            />
-          ))}
-        </div>
-      )}
+        .hero-content {
+          max-width: 1200px;
+          margin: 0 auto;
+          width: 100%;
+        }
 
-      {products.length > 1 && (
-        <>
-          <button
-            onClick={() => setActive((p) => (p === 0 ? products.length - 1 : p - 1))}
-            style={{
-              position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)",
-              width: "36px", height: "36px", background: "rgba(255,255,255,.85)", border: "none", borderRadius: "50%", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "16px", color: "var(--ink)", zIndex: 3,
-            }}
-          >
-            {"‹"}
-          </button>
-          <button
-            onClick={() => setActive((p) => (p === products.length - 1 ? 0 : p + 1))}
-            style={{
-              position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)",
-              width: "36px", height: "36px", background: "rgba(255,255,255,.85)",
-              border: "none", borderRadius: "50%", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "16px", color: "var(--ink)", zIndex: 3,
-            }}
-          >
-            {"›"}
-          </button>
-        </>
-      )}
+        .hero-text {
+          animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-dots {
+          position: absolute;
+          bottom: 40px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 8px;
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .hero-slider {
+            min-height: 500px;
+            padding: 60px 20px;
+          }
+
+          .hero-title {
+            font-size: 32px !important;
+          }
+
+          .hero-subtitle {
+            font-size: 16px !important;
+          }
+
+          .hero-cta {
+            width: 100%;
+            text-align: center;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,25 +1,38 @@
-import { NextRequest, NextResponse } from "next/server";
-import { client } from "@/sanity/client";
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@sanity/client';
+
+const client = createClient({
+  projectId: '777maat6',
+  dataset: 'production',
+  apiVersion: '2024-01-01',
+  useCdn: true,
+});
 
 export async function GET(request: NextRequest) {
-  const q = request.nextUrl.searchParams.get("q");
-
-  if (!q || q.length < 2) {
-    return NextResponse.json({ products: [] });
-  }
-
   try {
-    const searchQuery = q + "*";
-    const products = await client.fetch(
-      `*[_type == "product" && (name match $searchQuery || sku match $searchQuery)] | order(name asc) [0...10] {
-        name, slug, price, oldPrice, mainImage,
-        "category": category->{ name }
+    const searchParams = request.nextUrl.searchParams;
+    const query = searchParams.get('q');
+
+    if (!query || query.length < 2) {
+      return NextResponse.json({ results: [] });
+    }
+
+    // Поиск по названию товара
+    const results = await client.fetch(
+      `*[_type == "product" && name match $searchQuery] | order(_createdAt desc) [0...20] {
+        _id,
+        name,
+        "slug": slug.current,
+        price,
+        "image": images[0].asset->url,
+        "category": category->name
       }`,
-      { searchQuery } as any
+      { searchQuery: `*${query}*` }
     );
 
-    return NextResponse.json({ products });
-  } catch {
-    return NextResponse.json({ products: [] });
+    return NextResponse.json({ results });
+  } catch (error) {
+    console.error('Search API error:', error);
+    return NextResponse.json({ results: [], error: 'Search failed' }, { status: 500 });
   }
 }

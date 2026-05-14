@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import SearchModal from "./SearchModal";
+import SearchBar from "./SearchBar";
 
 const navItems = [
   { href: "/", label: "Головна" },
@@ -16,7 +16,6 @@ const navItems = [
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
 
   return (
@@ -55,7 +54,7 @@ export default function Header() {
       </div>
 
       <header style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(245,241,232,.92)", backdropFilter: "blur(20px)", borderBottom: "1px solid var(--line-soft)" }}>
-        <div style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "space-between", height: "64px" }}>
+        <div style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "space-between", height: "64px", gap: "20px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <button className="mobile-only" onClick={() => setMenuOpen(!menuOpen)}
               style={{ background: "transparent", border: "none", cursor: "pointer", padding: "8px", display: "flex", flexDirection: "column", gap: "4px", zIndex: 101 }}>
@@ -67,20 +66,26 @@ export default function Header() {
               TAL<span style={{ color: "var(--gold-deep)", fontWeight: 500 }}>I</span>RA
             </Link>
           </div>
+
+          {/* SEARCH BAR - НОВЫЙ КОМПОНЕНТ */}
+          <div className="desktop-only" style={{ flex: "0 1 400px", maxWidth: "400px" }}>
+            <SearchBar />
+          </div>
+
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <nav className="desktop-only" style={{ display: "flex", gap: "0" }}>
               {navItems.map((item) => (
                 <Link key={item.href} href={item.href} className={"nav-link" + (pathname === item.href ? " active" : "")}>{item.label}</Link>
               ))}
             </nav>
-            <button onClick={() => setSearchOpen(true)} style={{ background: "transparent", border: "none", color: "var(--ink-soft)", width: "42px", height: "42px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.35-4.35" /></svg>
-            </button>
           </div>
         </div>
-      </header>
 
-      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+        {/* MOBILE SEARCH - ПОД HEADER */}
+        <div className="mobile-only" style={{ padding: "12px 20px", borderTop: "1px solid var(--line-soft)" }}>
+          <SearchBar />
+        </div>
+      </header>
 
       {menuOpen && (
         <div className="mobile-only" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "var(--bg)", zIndex: 98, padding: "120px 24px 40px", overflowY: "auto" }}>

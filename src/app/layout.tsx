@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "@/styles/catalog-grid.css";
 import FacebookPixel from "@/components/FacebookPixel";
 import { CartProvider } from "@/components/CartContext";
 import FloatingCart from "@/components/FloatingCart";
 import TelegramButton from "@/components/TelegramButton";
+import SocialProof from "@/components/SocialProof";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -66,10 +68,10 @@ export default function RootLayout({
     <html lang="uk">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-<link rel="apple-touch-icon" href="/icon-192.png" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-HP1NGWPK5G"></script>
-<script dangerouslySetInnerHTML={{ __html: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-HP1NGWPK5G')" }} />
+        <script dangerouslySetInnerHTML={{ __html: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-HP1NGWPK5G')" }} />
         <meta name="google-site-verification" content="CEO2PrkPXv-ELO6n4OycsHxD62VRF6781KwlyXY6gLY" />
         <script
           type="application/ld+json"
@@ -100,6 +102,7 @@ export default function RootLayout({
           {children}
           <FloatingCart />
           <TelegramButton />
+          <SocialProof />
         </CartProvider>
         <FacebookPixel />
       </body>
