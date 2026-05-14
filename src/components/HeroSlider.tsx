@@ -262,16 +262,16 @@ export default function HeroSlider() {
           border-radius: 8px;
           text-decoration: none;
           transition: all 0.3s ease;
-          background: #a07d3d;
+          background: #3d3530;
           color: #ffffff;
           border: none;
-          box-shadow: 0 4px 15px rgba(160, 125, 61, 0.6);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .hero-cta:hover {
           transform: translateY(-2px);
-          box-shadow: 0 6px 25px rgba(160, 125, 61, 0.8);
-          background: #8a6a2f;
+          box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+          background: #1a1612;
         }
 
         .hero-cta:active {
