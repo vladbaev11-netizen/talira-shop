@@ -9,8 +9,8 @@ interface Slide {
   subtitle: string;
   ctaText: string;
   ctaLink: string;
-  imagePath: string;
-  textColor: string;
+  imageUrl: string;
+  overlay: string;
 }
 
 const slides: Slide[] = [
@@ -20,8 +20,8 @@ const slides: Slide[] = [
     subtitle: "Створіть ідеальний простір для краси",
     ctaText: "Переглянути",
     ctaLink: "/catalog?category=krasa",
-    imagePath: "/images/hero/hero-banner-1.svg",
-    textColor: "white"
+    imageUrl: "https://images.pexels.com/photos/1090638/pexels-photo-1090638.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
+    overlay: "linear-gradient(135deg, rgba(26, 22, 18, 0.6) 0%, rgba(26, 22, 18, 0.3) 100%)"
   },
   {
     id: 2,
@@ -29,26 +29,26 @@ const slides: Slide[] = [
     subtitle: "Меблі • Електроніка • Краса • Здоров'я",
     ctaText: "Весь каталог",
     ctaLink: "/catalog",
-    imagePath: "/images/hero/hero-banner-2.svg",
-    textColor: "#1a1612"
+    imageUrl: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
+    overlay: "linear-gradient(135deg, rgba(245, 241, 232, 0.85) 0%, rgba(232, 220, 200, 0.75) 100%)"
   },
   {
     id: 3,
-    title: "Доставка 1-3 дні",
-    subtitle: "Новою Поштою по всій Україні • Оплата при отриманні",
-    ctaText: "Оформити замовлення",
-    ctaLink: "/catalog",
-    imagePath: "/images/hero/hero-banner-3.svg",
-    textColor: "white"
+    title: "Масажери та догляд",
+    subtitle: "Професійний догляд у комфорті власної оселі",
+    ctaText: "Дивитись",
+    ctaLink: "/catalog?category=zdorovia",
+    imageUrl: "https://images.pexels.com/photos/3760259/pexels-photo-3760259.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
+    overlay: "linear-gradient(135deg, rgba(160, 125, 61, 0.7) 0%, rgba(138, 106, 47, 0.5) 100%)"
   },
   {
     id: 4,
-    title: "Приєднуйтесь в Telegram",
-    subtitle: "Акції • Новинки • Підтримка 24/7",
-    ctaText: "Підписатись",
-    ctaLink: "https://t.me/talira_com_ua",
-    imagePath: "/images/hero/hero-banner-4.svg",
-    textColor: "white"
+    title: "Доставка по всій Україні",
+    subtitle: "Новою Поштою 1-3 дні • Оплата при отриманні",
+    ctaText: "Оформити замовлення",
+    ctaLink: "/catalog",
+    imageUrl: "https://images.pexels.com/photos/4246120/pexels-photo-4246120.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop",
+    overlay: "linear-gradient(135deg, rgba(160, 125, 61, 0.8) 0%, rgba(138, 106, 47, 0.6) 100%)"
   }
 ];
 
@@ -78,6 +78,9 @@ export default function HeroSlider() {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
+  const slide = slides[currentSlide];
+  const isDark = slide.id === 1 || slide.id === 3 || slide.id === 4;
+
   return (
     <div 
       className="hero-slider"
@@ -85,30 +88,48 @@ export default function HeroSlider() {
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Slides */}
-      {slides.map((slide, index) => {
+      {slides.map((s, index) => {
         const isActive = currentSlide === index;
+        const textColor = s.id === 2 ? '#1a1612' : '#ffffff';
 
         return (
           <div
-            key={slide.id}
+            key={s.id}
             className={`hero-slide ${isActive ? 'active' : ''}`}
-            style={{
-              backgroundImage: `url(${slide.imagePath})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }}
           >
+            {/* Background Image */}
+            <div 
+              className="hero-bg"
+              style={{
+                backgroundImage: `url(${s.imageUrl})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            />
+            
+            {/* Overlay */}
+            <div 
+              className="hero-overlay"
+              style={{ background: s.overlay }}
+            />
+
+            {/* Content */}
             <div className="hero-content">
               <div className="hero-text">
-                {/* Текст скрыт, так как он уже в баннере */}
-                {/* Но оставляем CTA кнопку */}
+                <h1 className="hero-title" style={{ color: textColor }}>
+                  {s.title}
+                </h1>
+                
+                <p className="hero-subtitle" style={{ color: textColor }}>
+                  {s.subtitle}
+                </p>
+
                 <Link 
-                  href={slide.ctaLink}
+                  href={s.ctaLink}
                   className="hero-cta"
-                  target={slide.ctaLink.startsWith('http') ? '_blank' : undefined}
-                  rel={slide.ctaLink.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  target={s.ctaLink.startsWith('http') ? '_blank' : undefined}
                 >
-                  {slide.ctaText}
+                  {s.ctaText}
                 </Link>
               </div>
             </div>
@@ -165,11 +186,7 @@ export default function HeroSlider() {
           height: 100%;
           opacity: 0;
           visibility: hidden;
-          transition: opacity 0.8s ease, visibility 0.8s ease;
-          display: flex;
-          align-items: flex-end;
-          justify-content: flex-start;
-          padding: 60px;
+          transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
         }
 
         .hero-slide.active {
@@ -178,13 +195,56 @@ export default function HeroSlider() {
           z-index: 1;
         }
 
+        .hero-bg {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+        }
+
+        .hero-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+        }
+
         .hero-content {
           position: relative;
           z-index: 2;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 60px;
+          height: 100%;
+          display: flex;
+          align-items: center;
         }
 
         .hero-text {
-          animation: fadeInUp 0.8s ease-out;
+          max-width: 700px;
+          animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-title {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(42px, 6vw, 76px);
+          font-weight: 600;
+          line-height: 1.1;
+          margin-bottom: 24px;
+          text-shadow: 0 3px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-subtitle {
+          font-family: var(--font-sans);
+          font-size: clamp(17px, 2.2vw, 24px);
+          line-height: 1.6;
+          margin-bottom: 40px;
+          opacity: 0.95;
+          text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
         }
 
         .hero-cta {
@@ -287,7 +347,7 @@ export default function HeroSlider() {
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
           }
           to {
             opacity: 1;
@@ -300,8 +360,17 @@ export default function HeroSlider() {
             height: 500px;
           }
 
-          .hero-slide {
-            padding: 40px 24px;
+          .hero-content {
+            padding: 0 24px;
+          }
+
+          .hero-title {
+            font-size: 38px;
+          }
+
+          .hero-subtitle {
+            font-size: 17px;
+            margin-bottom: 32px;
           }
 
           .hero-cta {
