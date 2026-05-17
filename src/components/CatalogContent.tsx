@@ -136,6 +136,70 @@ export default function CatalogContent() {
                   </div>
                 )}
 
+                {/* Пагинация */}
+                {Math.ceil(total / itemsPerPage) > 1 && (
+                  <div className="pagination">
+                    <button
+                      className="page-btn"
+                      disabled={currentPage === 1}
+                      onClick={() => {
+                        setCurrentPage(1);
+                        setProducts([]);
+                        loadProducts(1);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                    >
+                      ← Попередня
+                    </button>
+
+                    <div className="page-numbers">
+                      {[...Array(Math.min(Math.ceil(total / itemsPerPage), 7))].map((_, i) => {
+                        const totalPages = Math.ceil(total / itemsPerPage);
+                        let pageNum;
+                        
+                        if (totalPages <= 7) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 4) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 3) {
+                          pageNum = totalPages - 6 + i;
+                        } else {
+                          pageNum = currentPage - 3 + i;
+                        }
+
+                        return (
+                          <button
+                            key={pageNum}
+                            className={`page-num ${currentPage === pageNum ? 'active' : ''}`}
+                            onClick={() => {
+                              setCurrentPage(pageNum);
+                              setProducts([]);
+                              loadProducts(pageNum);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      className="page-btn"
+                      disabled={currentPage === Math.ceil(total / itemsPerPage)}
+                      onClick={() => {
+                        const nextPage = currentPage + 1;
+                        setCurrentPage(nextPage);
+                        setProducts([]);
+                        loadProducts(nextPage);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                    >
+                      Наступна →
+                    </button>
+                  </div>
+                )}
+
                 {/* Кнопка загрузить ещё */}
                 {hasMore && (
                   <div className="load-more-wrapper">
@@ -223,6 +287,49 @@ export default function CatalogContent() {
           font-family: var(--font-sans);
           font-size: 14px;
           cursor: pointer;
+        }
+
+        .pagination {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 12px;
+          margin: 40px 0 24px 0;
+        }
+
+        .page-btn,
+        .page-num {
+          padding: 10px 16px;
+          border: 2px solid var(--line, #e0d4ba);
+          background: #ffffff;
+          border-radius: 6px;
+          font-family: var(--font-sans);
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .page-btn:hover:not(:disabled),
+        .page-num:hover {
+          border-color: var(--gold-deep, #a07d3d);
+          color: var(--gold-deep, #a07d3d);
+        }
+
+        .page-btn:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        .page-num.active {
+          background: var(--gold-deep, #a07d3d);
+          border-color: var(--gold-deep, #a07d3d);
+          color: #ffffff;
+        }
+
+        .page-numbers {
+          display: flex;
+          gap: 6px;
         }
 
         .catalog-layout {
@@ -318,6 +425,15 @@ export default function CatalogContent() {
           .load-more-btn {
             width: 100%;
             max-width: 320px;
+          }
+
+          .pagination {
+            flex-wrap: wrap;
+          }
+
+          .page-numbers {
+            flex-wrap: wrap;
+            justify-content: center;
           }
         }
       `}</style>
