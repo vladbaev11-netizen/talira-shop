@@ -115,7 +115,7 @@ export default function CatalogContent() {
           {/* Товары */}
           <main className="main-content">
             
-            {loading && page === 1 ? (
+            {loading && currentPage === 1 ? (
               <div className="loading">
                 <div className="spinner" />
                 <p>Завантаження...</p>
