@@ -17,9 +17,13 @@ interface Product {
   name: string;
   slug: { current: string };
   price: number;
-  mainImage?: { asset: { _ref: string } };
-  category: string;
+  oldPrice?: number;
+  badge?: string;
+  mainImage?: any;
+  externalImages?: string[];
+  category?: { name: string };
   inStock: boolean;
+  categorySlug?: string;
 }
 
 export default function HomeContent() {
@@ -36,8 +40,12 @@ export default function HomeContent() {
           name,
           slug,
           price,
+          oldPrice,
+          badge,
           mainImage,
-          "category": category->slug.current,
+          externalImages,
+          "category": category->{name},
+          "categorySlug": category->slug.current,
           inStock
         }`;
         
@@ -64,7 +72,7 @@ export default function HomeContent() {
 
     // Фильтр по категории
     if (filters.category !== 'all') {
-      filtered = filtered.filter(p => p.category === filters.category);
+      filtered = filtered.filter(p => p.categorySlug === filters.category);
     }
 
     // Фильтр по цене
