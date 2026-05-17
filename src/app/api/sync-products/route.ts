@@ -76,19 +76,10 @@ function createSlug(name: string): string {
     .substring(0, 96);
 }
 
-// Функция для загрузки изображения в Sanity
+// Функция для загрузки изображения в Sanity (отключена для ускорения)
 async function uploadImageToSanity(imageUrl: string): Promise<string | null> {
-  try {
-    const response = await fetch(imageUrl);
-    const buffer = await response.arrayBuffer();
-    const asset = await sanityClient.assets.upload('image', Buffer.from(buffer), {
-      filename: imageUrl.split('/').pop() || 'product-image.jpg',
-    });
-    return asset._id;
-  } catch (error) {
-    console.error('Error uploading image:', error);
-    return null;
-  }
+  // Пропускаем загрузку - используем внешние ссылки
+  return null;
 }
 
 // Функция для поиска или создания категории
@@ -150,68 +141,74 @@ export async function GET() {
     console.log(`✨ New products: ${newProducts.length}`);
     console.log(`🔄 Products to update: ${updatedProducts.length}`);
 
-    // 4. Добавляем новые товары
+    // 4. Добавляем новые товары (batch)
     const todayDate = new Date().toISOString().split('T')[0];
     
-    for (const product of newProducts) {
-      try {
-        const slug = createSlug(product.name);
+    if (newProducts.length > 0) {
+      console.log(`🚀 Creating ${newProducts.length} products in batches...`);
+      
+      const batchSize = 50;
+      for (let i = 0; i < newProducts.length; i += batchSize) {
+        const batch = newProducts.slice(i, i + batchSize);
         
-        // Загружаем главное изображение
-        let mainImageRef = null;
-        if (product.main_image) {
-          mainImageRef = await uploadImageToSanity(product.main_image);
+        const transaction = sanityClient.transaction();
+        
+        for (const product of batch) {
+          const slug = createSlug(product.name);
+          
+          // Находим/создаём категорию
+          let categoryRef = null;
+          if (product.group?.name) {
+            categoryRef = await findOrCreateCategory(product.group.name);
+          }
+
+          // Создаём товар
+          transaction.create({
+            _type: 'product',
+            promId: product.id,
+            name: product.name,
+            slug: { _type: 'slug', current: slug },
+            price: product.discount_price || product.price,
+            oldPrice: product.discount_price ? product.price : undefined,
+            description: product.description,
+            externalImages: product.images || (product.main_image ? [product.main_image] : []),
+            inStock: product.presence === 'available',
+            category: categoryRef ? { _type: 'reference', _ref: categoryRef } : undefined,
+          });
         }
 
-        // Находим/создаём категорию
-        let categoryRef = null;
-        if (product.group?.name) {
-          categoryRef = await findOrCreateCategory(product.group.name);
-        }
-
-        // Создаём товар в Sanity
-        await sanityClient.create({
-          _type: 'product',
-          promId: product.id,
-          name: product.name,
-          slug: { _type: 'slug', current: slug },
-          price: product.discount_price || product.price,
-          oldPrice: product.discount_price ? product.price : undefined,
-          description: product.description,
-          mainImage: mainImageRef ? {
-            _type: 'image',
-            asset: { _type: 'reference', _ref: mainImageRef }
-          } : undefined,
-          externalImages: product.images || [],
-          inStock: product.presence === 'available',
-          category: categoryRef ? { _type: 'reference', _ref: categoryRef } : undefined,
-        });
-
-        console.log(`✅ Created: ${product.name}`);
-      } catch (error) {
-        console.error(`❌ Error creating product ${product.id}:`, error);
+        await transaction.commit();
+        console.log(`✅ Created batch ${i / batchSize + 1} (${batch.length} products)`);
       }
     }
 
-    // 5. Обновляем существующие товары
-    for (const product of updatedProducts) {
-      try {
-        const existingProduct = sanityProductsMap.get(product.id);
-        if (!existingProduct) continue;
+    // 5. Обновляем существующие товары (batch)
+    if (updatedProducts.length > 0) {
+      console.log(`🔄 Updating ${updatedProducts.length} products in batches...`);
+      
+      const batchSize = 50;
+      for (let i = 0; i < updatedProducts.length; i += batchSize) {
+        const batch = updatedProducts.slice(i, i + batchSize);
+        
+        const transaction = sanityClient.transaction();
+        
+        for (const product of batch) {
+          const existingProduct = sanityProductsMap.get(product.id);
+          if (!existingProduct) continue;
 
-        await sanityClient
-          .patch(existingProduct._id)
-          .set({
-            name: product.name,
-            price: product.discount_price || product.price,
-            oldPrice: product.discount_price ? product.price : undefined,
-            inStock: product.presence === 'available',
-          })
-          .commit();
+          transaction.patch(existingProduct._id, {
+            set: {
+              name: product.name,
+              price: product.discount_price || product.price,
+              oldPrice: product.discount_price ? product.price : undefined,
+              inStock: product.presence === 'available',
+              externalImages: product.images || (product.main_image ? [product.main_image] : []),
+            }
+          });
+        }
 
-        console.log(`🔄 Updated: ${product.name}`);
-      } catch (error) {
-        console.error(`❌ Error updating product ${product.id}:`, error);
+        await transaction.commit();
+        console.log(`🔄 Updated batch ${i / batchSize + 1} (${batch.length} products)`);
       }
     }
 
