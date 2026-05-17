@@ -1,9 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { client } from '@/sanity/lib/client';
+import { createClient } from '@sanity/client';
 import HomeFilters from './HomeFilters';
 import ProductCard from './ProductCard';
+
+const client = createClient({
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '777maat6',
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+  apiVersion: '2024-01-01',
+  useCdn: true,
+});
 
 interface Product {
   _id: string;
