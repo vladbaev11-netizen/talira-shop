@@ -171,8 +171,13 @@ export default function HomeContent() {
             {/* Новинки */}
             <section className="product-section">
               <div className="section-header">
-                <h2 className="section-title">Новинки</h2>
-                <p className="section-subtitle">Останні надходження товарів</p>
+                <div className="section-header-left">
+                  <h2 className="section-title">Новинки</h2>
+                  <p className="section-subtitle">Останні надходження товарів</p>
+                </div>
+                <a href="/catalog" className="view-all-btn">
+                  Всі товари →
+                </a>
               </div>
               <div className="products-grid">
                 {filteredNew.slice(0, showNewCount).map((product) => (
@@ -194,8 +199,13 @@ export default function HomeContent() {
             {/* Популярні */}
             <section className="product-section">
               <div className="section-header">
-                <h2 className="section-title">Популярні товари</h2>
-                <p className="section-subtitle">Найбільш затребувані товари</p>
+                <div className="section-header-left">
+                  <h2 className="section-title">Популярні товари</h2>
+                  <p className="section-subtitle">Найбільш затребувані товари</p>
+                </div>
+                <a href="/catalog" className="view-all-btn">
+                  Всі товари →
+                </a>
               </div>
               <div className="products-grid">
                 {filteredPopular.slice(0, showPopularCount).map((product) => (
@@ -217,8 +227,13 @@ export default function HomeContent() {
             {/* Хіт продажу */}
             <section className="product-section">
               <div className="section-header">
-                <h2 className="section-title">Хіт продажу</h2>
-                <p className="section-subtitle">Найкращі пропозиції</p>
+                <div className="section-header-left">
+                  <h2 className="section-title">Хіт продажу</h2>
+                  <p className="section-subtitle">Найкращі пропозиції</p>
+                </div>
+                <a href="/catalog" className="view-all-btn">
+                  Всі товари →
+                </a>
               </div>
               <div className="products-grid">
                 {filteredHit.slice(0, showHitCount).map((product) => (
@@ -240,8 +255,13 @@ export default function HomeContent() {
             {/* Всі товари */}
             <section className="product-section">
               <div className="section-header">
-                <h2 className="section-title">Всі товари</h2>
-                <p className="section-subtitle">Повний каталог наших товарів</p>
+                <div className="section-header-left">
+                  <h2 className="section-title">Всі товари</h2>
+                  <p className="section-subtitle">Повний каталог наших товарів</p>
+                </div>
+                <a href="/catalog" className="view-all-btn">
+                  Перейти в каталог →
+                </a>
               </div>
               <div className="products-grid">
                 {filteredAll.slice(0, showAllCount).map((product) => (
@@ -299,23 +319,55 @@ export default function HomeContent() {
         }
 
         .section-header {
-          text-align: center;
-          margin-bottom: 48px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          margin-bottom: 40px;
+          padding-bottom: 20px;
+          border-bottom: 1px solid var(--line, #e0d4ba);
+        }
+
+        .section-header-left {
+          flex: 1;
         }
 
         .section-title {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 42px;
+          font-size: 36px;
           font-weight: 600;
           color: var(--text-dark, #1a1612);
-          margin: 0 0 12px 0;
+          margin: 0 0 8px 0;
         }
 
         .section-subtitle {
           font-family: var(--font-sans);
-          font-size: 16px;
+          font-size: 15px;
           color: var(--text-dim, #8a7a6a);
           margin: 0;
+        }
+
+        .view-all-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 28px;
+          background: transparent;
+          color: var(--gold-deep, #a07d3d);
+          border: 2px solid var(--gold-deep, #a07d3d);
+          border-radius: 6px;
+          font-family: var(--font-sans);
+          font-size: 14px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-decoration: none;
+        }
+
+        .view-all-btn:hover {
+          background: var(--gold-deep, #a07d3d);
+          color: #ffffff;
         }
 
         .products-grid {
@@ -381,8 +433,19 @@ export default function HomeContent() {
             margin-bottom: 60px;
           }
 
+          .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+          }
+
           .section-title {
-            font-size: 32px;
+            font-size: 28px;
+          }
+
+          .view-all-btn {
+            width: 100%;
+            justify-content: center;
           }
 
           .products-grid {
