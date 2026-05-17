@@ -27,10 +27,11 @@ export default {
       date: 'date',
       count: 'productCount',
     },
-    prepare(selection: { date: string; count: number }) {
+    prepare(selection: Record<string, any>) {
+      const { date, count } = selection;
       return {
-        title: `Поступлення ${selection.date}`,
-        subtitle: `${selection.count} товарів`,
+        title: `Поступлення ${date || ''}`,
+        subtitle: `${count || 0} товарів`,
       };
     },
   },
