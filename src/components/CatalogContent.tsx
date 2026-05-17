@@ -1,41 +1,36 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import ProductCard from './ProductCard';
 import CatalogFilters from './CatalogFilters';
 
-type ViewMode = 'pagination' | 'loadmore';
-
 export default function CatalogContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   
   const [products, setProducts] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<ViewMode>('loadmore');
   const [itemsPerPage, setItemsPerPage] = useState(24);
+  const [currentPage, setCurrentPage] = useState(1);
   
-  const page = parseInt(searchParams.get('page') || '1');
   const category = searchParams.get('category');
   const search = searchParams.get('search');
 
   // Загрузка настроек из localStorage
   useEffect(() => {
-    const savedMode = localStorage.getItem('catalogViewMode') as ViewMode;
     const savedLimit = localStorage.getItem('catalogItemsPerPage');
-    
-    if (savedMode) setViewMode(savedMode);
     if (savedLimit) setItemsPerPage(parseInt(savedLimit));
   }, []);
 
   // Загрузка товаров
   useEffect(() => {
-    loadProducts();
-  }, [page, category, search, itemsPerPage]);
+    setProducts([]);
+    setCurrentPage(1);
+    loadProducts(1);
+  }, [category, search, itemsPerPage]);
 
-  const loadProducts = async () => {
+  const loadProducts = async (page: number) => {
     setLoading(true);
     
     try {
@@ -46,10 +41,10 @@ export default function CatalogContent() {
       const response = await fetch(`/api/products?${params.toString()}`);
       const data = await response.json();
 
-      if (viewMode === 'loadmore' && page > 1) {
-        setProducts(prev => [...prev, ...(data.products || [])]);
-      } else {
+      if (page === 1) {
         setProducts(data.products || []);
+      } else {
+        setProducts(prev => [...prev, ...(data.products || [])]);
       }
       
       setTotal(data.total || 0);
@@ -60,43 +55,21 @@ export default function CatalogContent() {
     }
   };
 
-  const handleViewModeChange = (mode: ViewMode) => {
-    setViewMode(mode);
-    localStorage.setItem('catalogViewMode', mode);
-    
-    // Сброс на первую страницу
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', '1');
-    router.push(`/catalog?${params.toString()}`);
-  };
-
   const handleItemsPerPageChange = (value: number) => {
     setItemsPerPage(value);
     localStorage.setItem('catalogItemsPerPage', String(value));
-    
-    // Сброс на первую страницу
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', '1');
-    router.push(`/catalog?${params.toString()}`);
-  };
-
-  const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', String(newPage));
-    router.push(`/catalog?${params.toString()}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setProducts([]);
+    setCurrentPage(1);
+    loadProducts(1);
   };
 
   const handleLoadMore = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', String(page + 1));
-    router.push(`/catalog?${params.toString()}`);
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+    loadProducts(nextPage);
   };
 
-  const totalPages = Math.ceil(total / itemsPerPage);
-  const hasMore = page < totalPages;
-  const showingFrom = (page - 1) * itemsPerPage + 1;
-  const showingTo = Math.min(page * itemsPerPage, total);
+  const hasMore = products.length < total;
 
   return (
     <div className="catalog-page">
@@ -114,21 +87,8 @@ export default function CatalogContent() {
 
         {/* Настройки отображения */}
         <div className="view-controls">
-          <div className="view-modes">
-            <button
-              className={`mode-btn ${viewMode === 'pagination' ? 'active' : ''}`}
-              onClick={() => handleViewModeChange('pagination')}
-              title="Сторінки"
-            >
-              📄 Сторінки
-            </button>
-            <button
-              className={`mode-btn ${viewMode === 'loadmore' ? 'active' : ''}`}
-              onClick={() => handleViewModeChange('loadmore')}
-              title="Завантажити більше"
-            >
-              📜 Завантажити більше
-            </button>
+          <div className="showing-count">
+            Показано {products.length} з {total}
           </div>
 
           <div className="items-per-page">
@@ -141,10 +101,6 @@ export default function CatalogContent() {
               <option value={48}>48</option>
               <option value={96}>96</option>
             </select>
-          </div>
-
-          <div className="showing-count">
-            Показано {showingFrom}-{showingTo} з {total}
           </div>
         </div>
 
@@ -180,64 +136,18 @@ export default function CatalogContent() {
                   </div>
                 )}
 
-                {/* Пагинация */}
-                {viewMode === 'pagination' && totalPages > 1 && (
-                  <div className="pagination">
-                    <button
-                      className="page-btn"
-                      disabled={page === 1}
-                      onClick={() => handlePageChange(page - 1)}
-                    >
-                      ← Попередня
-                    </button>
-
-                    <div className="page-numbers">
-                      {[...Array(Math.min(totalPages, 7))].map((_, i) => {
-                        let pageNum;
-                        if (totalPages <= 7) {
-                          pageNum = i + 1;
-                        } else if (page <= 4) {
-                          pageNum = i + 1;
-                        } else if (page >= totalPages - 3) {
-                          pageNum = totalPages - 6 + i;
-                        } else {
-                          pageNum = page - 3 + i;
-                        }
-
-                        return (
-                          <button
-                            key={pageNum}
-                            className={`page-num ${page === pageNum ? 'active' : ''}`}
-                            onClick={() => handlePageChange(pageNum)}
-                          >
-                            {pageNum}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <button
-                      className="page-btn"
-                      disabled={page === totalPages}
-                      onClick={() => handlePageChange(page + 1)}
-                    >
-                      Наступна →
-                    </button>
-                  </div>
-                )}
-
                 {/* Кнопка загрузить ещё */}
-                {viewMode === 'loadmore' && hasMore && (
+                {hasMore && (
                   <div className="load-more-wrapper">
                     <button
                       className="load-more-btn"
                       onClick={handleLoadMore}
                       disabled={loading}
                     >
-                      {loading ? 'Завантаження...' : 'Показати більше'}
+                      {loading ? 'Завантаження...' : 'Завантажити більше'}
                     </button>
                     <p className="load-more-hint">
-                      Ще {total - showingTo} товарів
+                      Ще {total - products.length} товарів
                     </p>
                   </div>
                 )}
@@ -292,32 +202,10 @@ export default function CatalogContent() {
           flex-wrap: wrap;
         }
 
-        .view-modes {
-          display: flex;
-          gap: 8px;
-        }
-
-        .mode-btn {
-          padding: 8px 16px;
-          border: 2px solid var(--line, #e0d4ba);
-          background: transparent;
-          border-radius: 6px;
+        .showing-count {
           font-family: var(--font-sans);
           font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .mode-btn:hover {
-          border-color: var(--gold-deep, #a07d3d);
-          color: var(--gold-deep, #a07d3d);
-        }
-
-        .mode-btn.active {
-          background: var(--gold-deep, #a07d3d);
-          border-color: var(--gold-deep, #a07d3d);
-          color: #ffffff;
+          color: var(--text-dim, #8a7a6a);
         }
 
         .items-per-page {
@@ -335,12 +223,6 @@ export default function CatalogContent() {
           font-family: var(--font-sans);
           font-size: 14px;
           cursor: pointer;
-        }
-
-        .showing-count {
-          font-family: var(--font-sans);
-          font-size: 14px;
-          color: var(--text-dim, #8a7a6a);
         }
 
         .catalog-layout {
@@ -375,49 +257,6 @@ export default function CatalogContent() {
 
         @keyframes spin {
           to { transform: rotate(360deg); }
-        }
-
-        .pagination {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 12px;
-          margin-top: 40px;
-        }
-
-        .page-btn,
-        .page-num {
-          padding: 10px 16px;
-          border: 2px solid var(--line, #e0d4ba);
-          background: #ffffff;
-          border-radius: 6px;
-          font-family: var(--font-sans);
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .page-btn:hover:not(:disabled),
-        .page-num:hover {
-          border-color: var(--gold-deep, #a07d3d);
-          color: var(--gold-deep, #a07d3d);
-        }
-
-        .page-btn:disabled {
-          opacity: 0.4;
-          cursor: not-allowed;
-        }
-
-        .page-num.active {
-          background: var(--gold-deep, #a07d3d);
-          border-color: var(--gold-deep, #a07d3d);
-          color: #ffffff;
-        }
-
-        .page-numbers {
-          display: flex;
-          gap: 6px;
         }
 
         .load-more-wrapper {
@@ -462,13 +301,7 @@ export default function CatalogContent() {
           }
 
           .view-controls {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .view-modes,
-          .items-per-page {
-            justify-content: center;
+            justify-content: space-between;
           }
         }
 
@@ -485,14 +318,6 @@ export default function CatalogContent() {
           .load-more-btn {
             width: 100%;
             max-width: 320px;
-          }
-
-          .pagination {
-            flex-wrap: wrap;
-          }
-
-          .page-numbers {
-            flex-wrap: wrap;
           }
         }
       `}</style>
