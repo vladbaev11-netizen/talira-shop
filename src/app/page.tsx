@@ -1,124 +1,31 @@
-import { client } from "@/sanity/client";
+import { Suspense } from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ProductCard from "@/components/ProductCard";
 import HeroSlider from "@/components/HeroSlider";
-import CategoryCarousel from "@/components/CategoryCarousel";
-import Link from "next/link";
+import HomeContent from "@/components/HomeContent";
 
-async function getPopularProducts() {
-  // Random 12 products with images
-  const all = await client.fetch(`*[_type == "product" && defined(externalImages) && price > 200] {
-    name, slug, price, oldPrice, badge, mainImage, externalImages,
-    "category": category->{ name }
-  }`);
-  const shuffled = all.sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 12);
-}
-
-async function getTotalCount() {
-  return client.fetch(`count(*[_type == "product"])`);
-}
-
-async function getCategories() {
-  return client.fetch(`*[_type == "category"] | order(order asc) {
-    name, slug, description, image
-  }`);
-}
-
-// Refresh every 5 minutes for fresh random selection
-export const revalidate = 300;
-
-export default async function HomePage() {
-  const [popularProducts, totalCount, categories] = await Promise.all([
-    getPopularProducts(),
-    getTotalCount(),
-    getCategories()
-  ]);
-
+export default function HomePage() {
   return (
     <>
       <Header />
-
-      {/* HERO SLIDER - НОВЫЙ КОМПОНЕНТ */}
       <HeroSlider />
-
-      {/* CATEGORIES CAROUSEL */}
-      {categories.length > 0 && (
-        <section style={{ padding: "40px 0", borderBottom: "1px solid var(--line)" }}>
-          <div className="container-pad" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "26px", fontWeight: 400 }}>{"Категорії"}</h2>
-              <span style={{ fontSize: "11px", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--text-dim)" }}>{categories.length} {"колекцій"}</span>
-            </div>
-            <CategoryCarousel categories={JSON.parse(JSON.stringify(categories))} />
-          </div>
-        </section>
-      )}
-
-      {/* PRODUCTS */}
-      {popularProducts.length > 0 && (
-        <section style={{ padding: "48px 0 72px" }}>
-          <div className="container-pad" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px", paddingBottom: "16px", borderBottom: "1px solid var(--line-soft)" }}>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "26px", fontWeight: 400 }}>{"Популярні товари"}</h2>
-              <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>{totalCount} {"товарів"}</span>
-            </div>
-            <div className="grid-4">
-              {popularProducts.map((product: any) => (
-                <ProductCard key={product.slug.current} product={product} />
-              ))}
-            </div>
-            <div style={{ textAlign: "center", marginTop: "40px" }}>
-              <Link href="/catalog" style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "14px 36px", border: "1px solid var(--ink)", color: "var(--ink)", fontSize: "11px", fontWeight: 500, letterSpacing: ".22em", textTransform: "uppercase", borderRadius: "4px" }}>
-                {"Весь каталог"}
-                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* TRUST */}
-      <section style={{ background: "var(--ink)", color: "var(--bg)", padding: "48px 0" }}>
-        <div className="container-pad grid-trust" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
-          <TrustBlock num="12K+" label="Задоволених клієнтів" />
-          <TrustBlock num="4.9" label="Середній рейтинг" />
-          <TrustBlock num="1–3 дні" label="Доставка по Україні" />
-          <TrustBlock num="14 днів" label="Повернення товару" />
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section style={{ background: "var(--bg-soft)", padding: "60px 0" }}>
-        <div className="container-pad grid-features" style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 48px" }}>
-          <Feature icon="📦" title="Оплата при отриманні" desc="Після перевірки товару" border />
-          <Feature icon="🚚" title="Нова Пошта" desc="По всій Україні 1–3 дні" border />
-          <Feature icon="✅" title="Гарантія якості" desc="Перевіряємо перед відправкою" border />
-          <Feature icon="💬" title="Підтримка 24/7" desc="Telegram та Instagram" />
-        </div>
-      </section>
-
+      
+      <Suspense fallback={<HomeLoading />}>
+        <HomeContent />
+      </Suspense>
+      
       <Footer />
     </>
   );
 }
 
-function TrustBlock({ num, label }: { num: string; label: string }) {
+function HomeLoading() {
   return (
-    <div>
-      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "40px", fontWeight: 300, fontStyle: "italic", color: "var(--gold-soft)", lineHeight: 1, marginBottom: "8px" }}>{num}</div>
-      <div style={{ fontSize: "10px", letterSpacing: ".2em", textTransform: "uppercase", color: "rgba(245,241,232,.7)" }}>{label}</div>
-    </div>
-  );
-}
-
-function Feature({ icon, title, desc, border }: { icon: string; title: string; desc: string; border?: boolean }) {
-  return (
-    <div className={border ? "feature-item" : ""} style={!border ? { textAlign: "center", padding: "0 24px" } : undefined}>
-      <div style={{ fontSize: "24px", marginBottom: "12px", textAlign: "center" }}>{icon}</div>
-      <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px", fontWeight: 500, marginBottom: "6px", textAlign: "center" }}>{title}</h4>
-      <p style={{ fontSize: "12px", color: "var(--text)", lineHeight: "1.5", textAlign: "center" }}>{desc}</p>
+    <div style={{ padding: "60px 0" }}>
+      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 20px", textAlign: "center" }}>
+        <div className="spinner" />
+        <p style={{ color: "var(--text-dim)" }}>Завантаження товарів...</p>
+      </div>
     </div>
   );
 }
