@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import ArrivalsWidget from './ArrivalsWidget';
+import ShippingSchedule from './ShippingSchedule';
 
 interface FilterProps {
   onFilterChange: (filters: {
@@ -36,144 +38,160 @@ export default function HomeFilters({ onFilterChange }: FilterProps) {
   };
 
   return (
-    <div className="filters-sidebar">
-      <h3 className="filters-title">Фільтри</h3>
+    <div className="sidebar-wrapper">
+      
+      {/* Поступление товаров */}
+      <ArrivalsWidget />
 
-      {/* Категорії */}
-      <div className="filter-group">
-        <h4 className="filter-label">Категорія</h4>
-        <div className="filter-options">
-          <label className="filter-option">
+      {/* График отправлений */}
+      <ShippingSchedule />
+
+      {/* Фильтры */}
+      <div className="filters-sidebar">
+        <h3 className="filters-title">Фільтри</h3>
+
+        {/* Категорії */}
+        <div className="filter-group">
+          <h4 className="filter-label">Категорія</h4>
+          <div className="filter-options">
+            <label className="filter-option">
+              <input
+                type="radio"
+                name="category"
+                value="all"
+                checked={category === 'all'}
+                onChange={(e) => handleFilterChange(e.target.value, undefined, undefined)}
+              />
+              <span>Всі товари</span>
+            </label>
+            <label className="filter-option">
+              <input
+                type="radio"
+                name="category"
+                value="krasa"
+                checked={category === 'krasa'}
+                onChange={(e) => handleFilterChange(e.target.value, undefined, undefined)}
+              />
+              <span>Краса</span>
+            </label>
+            <label className="filter-option">
+              <input
+                type="radio"
+                name="category"
+                value="zdorovia"
+                checked={category === 'zdorovia'}
+                onChange={(e) => handleFilterChange(e.target.value, undefined, undefined)}
+              />
+              <span>Здоров'я</span>
+            </label>
+            <label className="filter-option">
+              <input
+                type="radio"
+                name="category"
+                value="dim"
+                checked={category === 'dim'}
+                onChange={(e) => handleFilterChange(e.target.value, undefined, undefined)}
+              />
+              <span>Для дому</span>
+            </label>
+            <label className="filter-option">
+              <input
+                type="radio"
+                name="category"
+                value="elektronika"
+                checked={category === 'elektronika'}
+                onChange={(e) => handleFilterChange(e.target.value, undefined, undefined)}
+              />
+              <span>Електроніка</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Ціна */}
+        <div className="filter-group">
+          <h4 className="filter-label">Ціна</h4>
+          <div className="filter-options">
+            <label className="filter-option">
+              <input
+                type="radio"
+                name="price"
+                value="all"
+                checked={priceRange === 'all'}
+                onChange={(e) => handleFilterChange(undefined, e.target.value, undefined)}
+              />
+              <span>Будь-яка</span>
+            </label>
+            <label className="filter-option">
+              <input
+                type="radio"
+                name="price"
+                value="0-1000"
+                checked={priceRange === '0-1000'}
+                onChange={(e) => handleFilterChange(undefined, e.target.value, undefined)}
+              />
+              <span>До 1000 грн</span>
+            </label>
+            <label className="filter-option">
+              <input
+                type="radio"
+                name="price"
+                value="1000-3000"
+                checked={priceRange === '1000-3000'}
+                onChange={(e) => handleFilterChange(undefined, e.target.value, undefined)}
+              />
+              <span>1000 - 3000 грн</span>
+            </label>
+            <label className="filter-option">
+              <input
+                type="radio"
+                name="price"
+                value="3000-5000"
+                checked={priceRange === '3000-5000'}
+                onChange={(e) => handleFilterChange(undefined, e.target.value, undefined)}
+              />
+              <span>3000 - 5000 грн</span>
+            </label>
+            <label className="filter-option">
+              <input
+                type="radio"
+                name="price"
+                value="5000+"
+                checked={priceRange === '5000+'}
+                onChange={(e) => handleFilterChange(undefined, e.target.value, undefined)}
+              />
+              <span>Від 5000 грн</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Наявність */}
+        <div className="filter-group">
+          <h4 className="filter-label">Наявність</h4>
+          <label className="filter-checkbox">
             <input
-              type="radio"
-              name="category"
-              value="all"
-              checked={category === 'all'}
-              onChange={(e) => handleFilterChange(e.target.value, undefined, undefined)}
+              type="checkbox"
+              checked={inStock}
+              onChange={(e) => handleFilterChange(undefined, undefined, e.target.checked)}
             />
-            <span>Всі товари</span>
-          </label>
-          <label className="filter-option">
-            <input
-              type="radio"
-              name="category"
-              value="krasa"
-              checked={category === 'krasa'}
-              onChange={(e) => handleFilterChange(e.target.value, undefined, undefined)}
-            />
-            <span>Краса</span>
-          </label>
-          <label className="filter-option">
-            <input
-              type="radio"
-              name="category"
-              value="zdorovia"
-              checked={category === 'zdorovia'}
-              onChange={(e) => handleFilterChange(e.target.value, undefined, undefined)}
-            />
-            <span>Здоров'я</span>
-          </label>
-          <label className="filter-option">
-            <input
-              type="radio"
-              name="category"
-              value="dim"
-              checked={category === 'dim'}
-              onChange={(e) => handleFilterChange(e.target.value, undefined, undefined)}
-            />
-            <span>Для дому</span>
-          </label>
-          <label className="filter-option">
-            <input
-              type="radio"
-              name="category"
-              value="elektronika"
-              checked={category === 'elektronika'}
-              onChange={(e) => handleFilterChange(e.target.value, undefined, undefined)}
-            />
-            <span>Електроніка</span>
+            <span>Тільки в наявності</span>
           </label>
         </div>
-      </div>
-
-      {/* Ціна */}
-      <div className="filter-group">
-        <h4 className="filter-label">Ціна</h4>
-        <div className="filter-options">
-          <label className="filter-option">
-            <input
-              type="radio"
-              name="price"
-              value="all"
-              checked={priceRange === 'all'}
-              onChange={(e) => handleFilterChange(undefined, e.target.value, undefined)}
-            />
-            <span>Будь-яка</span>
-          </label>
-          <label className="filter-option">
-            <input
-              type="radio"
-              name="price"
-              value="0-1000"
-              checked={priceRange === '0-1000'}
-              onChange={(e) => handleFilterChange(undefined, e.target.value, undefined)}
-            />
-            <span>До 1000 грн</span>
-          </label>
-          <label className="filter-option">
-            <input
-              type="radio"
-              name="price"
-              value="1000-3000"
-              checked={priceRange === '1000-3000'}
-              onChange={(e) => handleFilterChange(undefined, e.target.value, undefined)}
-            />
-            <span>1000 - 3000 грн</span>
-          </label>
-          <label className="filter-option">
-            <input
-              type="radio"
-              name="price"
-              value="3000-5000"
-              checked={priceRange === '3000-5000'}
-              onChange={(e) => handleFilterChange(undefined, e.target.value, undefined)}
-            />
-            <span>3000 - 5000 грн</span>
-          </label>
-          <label className="filter-option">
-            <input
-              type="radio"
-              name="price"
-              value="5000+"
-              checked={priceRange === '5000+'}
-              onChange={(e) => handleFilterChange(undefined, e.target.value, undefined)}
-            />
-            <span>Від 5000 грн</span>
-          </label>
-        </div>
-      </div>
-
-      {/* Наявність */}
-      <div className="filter-group">
-        <h4 className="filter-label">Наявність</h4>
-        <label className="filter-checkbox">
-          <input
-            type="checkbox"
-            checked={inStock}
-            onChange={(e) => handleFilterChange(undefined, undefined, e.target.checked)}
-          />
-          <span>Тільки в наявності</span>
-        </label>
       </div>
 
       <style jsx>{`
+        .sidebar-wrapper {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+          position: sticky;
+          top: 100px;
+        }
+
         .filters-sidebar {
           background: #ffffff;
           border: 1px solid var(--line, #e0d4ba);
           border-radius: 8px;
           padding: 24px;
-          position: sticky;
-          top: 100px;
         }
 
         .filters-title {
@@ -252,19 +270,8 @@ export default function HomeFilters({ onFilterChange }: FilterProps) {
         }
 
         @media (max-width: 1024px) {
-          .filters-sidebar {
+          .sidebar-wrapper {
             position: static;
-            margin-bottom: 32px;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .filters-sidebar {
-            padding: 20px;
-          }
-
-          .filters-title {
-            font-size: 20px;
           }
         }
       `}</style>
